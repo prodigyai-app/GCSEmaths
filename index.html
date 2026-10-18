@@ -1,6 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>GCSE Maths</title>
+<meta name="description" content="Edexcel GCSE Maths: interactive lessons, topic tests and full practice papers for Foundation and Higher.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,500..800&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -6712,3 +6713,254 @@ apply(get(),false);
 })();
 
 </script>
+
+<script>window.ALP_SITE="gcse-maths";</script>
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
+<style>
+/* ---------- accounts: sign-in, sync and teacher dashboard ---------- */
+#acc-ov,#td{position:fixed;inset:0;z-index:60;background:rgba(10,14,20,.6);display:grid;place-items:start center;padding:24px 16px;overflow-y:auto}
+#acc-ov[hidden],#td[hidden]{display:none}
+.acc-box{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);width:100%;max-width:440px;padding:22px;box-shadow:0 12px 40px rgba(0,0,0,.3);margin-top:6vh}
+.acc-box h2{margin:0 0 4px;font-family:var(--f-display);font-stretch:85%;font-size:1.55rem}
+.acc-box>p.muted{margin:0 0 14px;font-size:.95rem}
+.acc-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.acc-tabs button{min-height:40px}
+.acc-tabs button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.acc-form{display:flex;flex-direction:column;gap:10px}
+.acc-form label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--muted)}
+.acc-form input{font:inherit;font-size:1rem;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 10px;min-height:42px}
+.acc-form .hint{font-size:.82rem;color:var(--muted)}
+.acc-form .ok-note{font-size:.88rem;color:var(--good);font-weight:600}
+.acc-err{color:var(--bad);font-weight:600;font-size:.92rem;min-height:1.2em}
+.acc-links{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:.9rem}
+.acc-links button{all:unset;cursor:pointer;color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.acc-links button:focus-visible{outline:2px solid var(--accent)}
+.acc-btn{width:auto;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:6px 14px}
+.acc-menu{position:relative}
+.acc-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:40;background:var(--panel);border:1px solid var(--line);border-radius:8px;min-width:220px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:6px;display:flex;flex-direction:column}
+.acc-pop[hidden]{display:none}
+.acc-pop button{all:unset;cursor:pointer;padding:9px 10px;border-radius:6px;font-size:.95rem}
+.acc-pop button:hover,.acc-pop button:focus-visible{background:var(--sunk)}
+.acc-pop .who{padding:8px 10px 10px;border-bottom:1px solid var(--line);margin-bottom:4px;font-size:.85rem;color:var(--muted)}
+.acc-pop .who b{display:block;color:var(--ink);font-size:.98rem}
+.acc-sync{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);padding:4px 10px}
+/* teacher dashboard */
+#td .td-box{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);width:100%;max-width:1200px;padding:20px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.td-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.td-top h2{margin:0;font-family:var(--f-display);font-stretch:85%;font-size:1.7rem}
+.td-classes{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.td-classes .btn{width:auto;min-height:38px;padding:5px 14px}
+.td-classes .btn[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.td-new{display:flex;gap:8px;flex-wrap:wrap}
+.td-new input{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 10px;min-height:38px}
+.td-code{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 14px;border:1px dashed var(--accent);border-radius:8px;background:var(--panel);margin-bottom:14px}
+.td-code b{font-family:var(--f-mono);font-size:1.5rem;letter-spacing:.12em;color:var(--accent)}
+.td-tbl{min-width:860px}
+.td-tbl td,.td-tbl th{text-align:left;white-space:nowrap;padding:7px 10px}
+.td-tbl tbody tr{cursor:pointer}
+.td-tbl tbody tr:hover td{background:var(--sunk)}
+.td-tbl td.num,.td-tbl th.num{text-align:right}
+.td-pc{display:inline-block;min-width:44px;padding:1px 6px;border-radius:4px;text-align:center;font-weight:600}
+.td-pc.lo{background:color-mix(in srgb,var(--bad) 22%,transparent)}
+.td-pc.mid{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+.td-pc.hi{background:color-mix(in srgb,var(--good) 22%,transparent)}
+.td-detail{margin-top:16px}
+.td-two{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.td-two{grid-template-columns:minmax(0,1fr)}}
+.td-two .tbl-mini td,.td-two .tbl-mini th{white-space:nowrap}
+.td-two .tbl-mini td:first-child{white-space:normal;min-width:12ch}
+.td-detail .lcard{margin-bottom:12px}
+.td-actions{display:flex;gap:8px;flex-wrap:wrap}
+.td-actions .btn,.td-actions select{width:auto;min-height:36px;padding:4px 12px}
+.td-empty{padding:18px;color:var(--muted)}
+body.acc-on{overflow:hidden}
+</style>
+<script>
+/* Accounts: Supabase sign-in, progress sync across devices, and the teacher dashboard.
+   Only active when config.js provides ALP_CONFIG.url and ALP_CONFIG.key. */
+(()=>{
+const CFG=window.ALP_CONFIG||{};
+if(!CFG.url||!CFG.key||/PASTE|YOUR/i.test(CFG.url+CFG.key)||!window.supabase) return;
+const {$,$$,store}=LAB;
+const sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"alp-auth"}});
+const DOMAIN=CFG.emailDomain||"accounts.physicsalevel.prodigyai.uk";
+const SITES={"alevel-physics":["A Level Physics","physicsalevel.prodigyai.uk"],"gcse-physics":["GCSE Physics","physicsgcse.prodigyai.uk"],"gcse-maths":["GCSE Maths","mathsgcse.prodigyai.uk"]};
+const SITE=window.ALP_SITE&&SITES[window.ALP_SITE]?window.ALP_SITE:"alevel-physics", SITENAME=SITES[SITE][0];
+const isSync=k=>/^learn-/.test(k)||/^maths-/.test(k)||/^pl-.*-runs$/.test(k)||k==="alp-activity";
+const SPECIAL=new Set(["learn-motion-done","learn-check-state","learn-motion-exam","alp-activity"]);
+const OWNER="alp-owner";
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const raw={get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },del(k){ try{ localStorage.removeItem(k); }catch(e){} },keys(){ try{ return Object.keys(localStorage); }catch(e){ return []; } }};
+let user=null, profile=null, dirty=false, pushT=null, lastSync=null;
+
+/* ---------- local progress bundle ---------- */
+function gather(){ const o={}; raw.keys().filter(isSync).forEach(k=>{ try{ o[k]=JSON.parse(raw.get(k)); }catch(e){} }); return o; }
+function writeAll(o){ raw.keys().filter(isSync).forEach(k=>{ if(!(k in o)) raw.del(k); }); Object.entries(o).forEach(([k,v])=>raw.set(k,JSON.stringify(v))); }
+function clearLocal(){ raw.keys().filter(isSync).forEach(k=>raw.del(k)); raw.del(OWNER); }
+
+/* merge two bundles so that no progress is lost */
+function merge(a,b){ a=a||{}; b=b||{}; const out={...b,...a};
+  const D="learn-motion-done"; if(a[D]||b[D]) out[D]=[...new Set([...(b[D]||[]),...(a[D]||[])])];
+  const C="learn-check-state", rank={ok:3,shown:2,no:1}; if(a[C]||b[C]){ const m={...(b[C]||{})}; Object.entries(a[C]||{}).forEach(([k,v])=>{ if(!m[k]||(rank[v]||0)>(rank[m[k]]||0)) m[k]=v; }); out[C]=m; }
+  const E="learn-motion-exam"; if(a[E]||b[E]){ const sc=s=>!s||!s.done?-1:(s.t?s.t.filter(Boolean).length:0)+(+s.v||0)+(s.c!=null?1:0); const m={...(b[E]||{})};
+    Object.entries(a[E]||{}).forEach(([k,v])=>{ const w=m[k]; if(!w||sc(v)>sc(w)||(sc(v)===sc(w)&&(v.w||"").length>(w.w||"").length)) m[k]=v; }); out[E]=m; }
+  const A="alp-activity"; if(a[A]||b[A]){ const x=a[A]||{}, y=b[A]||{}, r={time:{},first:{},last:{},days:[]};
+    new Set([...Object.keys(x.time||{}),...Object.keys(y.time||{})]).forEach(id=>{ r.time[id]=Math.max((x.time||{})[id]||0,(y.time||{})[id]||0);
+      const f=[(x.first||{})[id],(y.first||{})[id]].filter(Boolean).sort(); if(f[0]) r.first[id]=f[0];
+      const l=[(x.last||{})[id],(y.last||{})[id]].filter(Boolean).sort(); if(l.length) r.last[id]=l[l.length-1]; });
+    r.days=[...new Set([...(x.days||[]),...(y.days||[])])].sort(); out[A]=r; }
+  const plain=o=>o&&typeof o==="object"&&!Array.isArray(o);
+  Object.keys(out).forEach(k=>{ if(SPECIAL.has(k)||!(k in a)||!(k in b)) return;
+    if(plain(a[k])&&plain(b[k])) out[k]={...b[k],...a[k]}; else if(Array.isArray(a[k])&&Array.isArray(b[k])) out[k]=a[k].length>=b[k].length?a[k]:b[k]; });
+  return out; }
+
+/* ---------- push / pull ---------- */
+const origSet=store.set.bind(store);
+store.set=(k,v)=>{ origSet(k,v); if(user&&isSync(k)){ dirty=true; if(!pushT) pushT=setTimeout(()=>{ pushT=null; push(); },4000); } };
+async function push(){ if(!user||!dirty) return; dirty=false; const data=gather();
+  const {error}=await sb.from("progress").upsert({user_id:user.id,site:SITE,data,updated_at:new Date().toISOString()},{onConflict:"user_id,site"});
+  if(error){ dirty=true; showSync("Not saved yet: will retry"); } else { lastSync=new Date(); showSync(); } }
+setInterval(()=>{ if(dirty) push(); },60000);
+window.addEventListener("pagehide",()=>{ if(dirty) push(); });
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"&&dirty) push(); });
+
+async function pull(){ const {data,error}=await sb.from("progress").select("data,updated_at").eq("user_id",user.id).eq("site",SITE).maybeSingle();
+  if(error) return false; const server=(data&&data.data)||{}; const owner=raw.get(OWNER);
+  const local=owner&&owner!==user.id?{}:gather(); const merged=merge(local,server);
+  const changedLocal=JSON.stringify(sortDeep(merged))!==JSON.stringify(sortDeep(gather()))||owner!==user.id;
+  if(JSON.stringify(sortDeep(merged))!==JSON.stringify(sortDeep(server))){ await sb.from("progress").upsert({user_id:user.id,site:SITE,data:merged,updated_at:new Date().toISOString()},{onConflict:"user_id,site"}); }
+  writeAll(merged); raw.set(OWNER,user.id); lastSync=new Date();
+  return changedLocal; }
+function sortDeep(o){ if(Array.isArray(o)) return o.map(sortDeep); if(o&&typeof o==="object"){ const r={}; Object.keys(o).sort().forEach(k=>r[k]=sortDeep(o[k])); return r; } return o; }
+
+/* ---------- header button and menu ---------- */
+const head=$("header.top"); let wrap=head&&head.querySelector(".top-actions"); if(head&&!wrap){ wrap=document.createElement("div"); wrap.className="top-actions"; head.appendChild(wrap); }
+const menu=document.createElement("div"); menu.className="acc-menu"; menu.innerHTML=`<button class="btn acc-btn" id="acc-b" aria-haspopup="true" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span id="acc-bl">Sign in</span></button><div class="acc-pop" id="acc-pop" hidden></div>`;
+if(wrap) wrap.appendChild(menu);
+function showSync(msg){ const e=$("#acc-sync"); if(e) e.textContent=msg||(lastSync?`Saved ${lastSync.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"})}`:""); }
+function renderMenu(){ const pop=$("#acc-pop"); $("#acc-bl").textContent=user?(profile&&(profile.display_name||profile.username))||"Account":"Sign in";
+  if(!user){ pop.hidden=true; return; }
+  pop.innerHTML=`<div class="who"><b>${esc(profile?profile.display_name||profile.username:"")}</b>${esc(profile?profile.username:"")}${profile&&profile.role==="teacher"?" · teacher":""}</div>${profile&&profile.role==="teacher"?`<button data-acc="dash">Teacher dashboard</button>`:`<button data-acc="join">Join a class</button>`}<button data-acc="out">Sign out</button><button data-acc="del">Delete my account</button><div class="acc-sync" id="acc-sync"></div>`; showSync(); }
+$("#acc-b").addEventListener("click",e=>{ e.stopPropagation(); if(!user){ openAuth("in"); return; } const p=$("#acc-pop"); p.hidden=!p.hidden; $("#acc-b").setAttribute("aria-expanded",String(!p.hidden)); });
+document.addEventListener("click",e=>{ const p=$("#acc-pop"); if(p&&!p.hidden&&!e.target.closest(".acc-menu")) p.hidden=true; });
+$("#acc-pop").addEventListener("click",async e=>{ const a=e.target.closest("[data-acc]"); if(!a) return; $("#acc-pop").hidden=true;
+  if(a.dataset.acc==="out"){ await push(); await sb.auth.signOut(); clearLocal(); location.reload(); }
+  else if(a.dataset.acc==="dash") openDash();
+  else if(a.dataset.acc==="join") openJoin(false);
+  else if(a.dataset.acc==="del"){ if(!confirm("Delete your account and all your saved progress on every site (A Level Physics, GCSE Physics and GCSE Maths)? This cannot be undone.")) return; const {error}=await sb.rpc("delete_my_account"); if(error){ alert("Sorry, the account could not be deleted: "+error.message); return; } await sb.auth.signOut(); clearLocal(); location.reload(); } });
+
+/* ---------- sign-in / sign-up dialog ---------- */
+const ov=document.createElement("div"); ov.id="acc-ov"; ov.hidden=true; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-labelledby","acc-h"); document.body.appendChild(ov);
+let mode="in";
+function form(){ const t=mode==="teacher";
+  if(mode==="in") return `<form class="acc-form" id="acc-f" autocomplete="on"><label>Username<input name="u" autocomplete="username" required autocapitalize="none" spellcheck="false"></label><label>Password<input name="p" type="password" autocomplete="current-password" required></label><div class="acc-err" id="acc-e" role="alert"></div><button class="btn primary" type="submit">Sign in</button><p class="hint">Forgotten your password? Ask your teacher to reset it.</p></form>`;
+  return `<form class="acc-form" id="acc-f" autocomplete="on"><label>Your name<input name="n" autocomplete="name" required maxlength="60"></label><label>Choose a username<input name="u" autocomplete="username" required autocapitalize="none" spellcheck="false" pattern="[A-Za-z0-9._\\-]{3,30}" title="3 to 30 letters, numbers, dots, dashes or underscores"><span class="hint">3–30 letters or numbers. You will use this to sign in.</span></label><label>Choose a password<input name="p" type="password" autocomplete="new-password" required minlength="6"></label><label>Type the password again<input name="p2" type="password" autocomplete="new-password" required minlength="6"></label>${t?`<label>Teacher code<input name="c" required autocomplete="off"><span class="hint">The secret code set up for this site.</span></label>`:`<label>Class code<input name="c" required autocomplete="off" autocapitalize="characters" maxlength="10"><span class="hint">Your teacher will give you this 6-character code. Already have an account from another of our sites? Choose Sign in instead.</span><span class="ok-note" id="acc-cn"></span></label>`}<div class="acc-err" id="acc-e" role="alert"></div><button class="btn primary" type="submit">${t?"Create teacher account":"Create account"}</button></form>`; }
+function openAuth(m){ mode=m||"in"; ov.innerHTML=`<div class="acc-box"><h2 id="acc-h">${mode==="teacher"?"Teacher sign-up":"Save your progress"}</h2><p class="muted">${mode==="teacher"?"Create a teacher account to set up classes and see your students' progress.":"Sign in so your progress is saved and follows you to any device."}</p>${mode==="teacher"?"":`<div class="acc-tabs"><button class="btn" data-m="in" aria-pressed="${mode==="in"}">Sign in</button><button class="btn" data-m="new" aria-pressed="${mode==="new"}">New student</button></div>`}${form()}<div class="acc-links"><button data-skip>Continue without saving</button>${mode==="teacher"?`<button data-m="in">Back to sign in</button>`:`<button data-m="teacher">I'm a teacher</button>`}</div></div>`;
+  ov.hidden=false; document.body.classList.add("acc-on"); const f=$("#acc-f"); setTimeout(()=>{ const i=f.querySelector("input"); if(i) i.focus(); },30);
+  f.addEventListener("submit",submit); const cc=f.querySelector('input[name="c"]'); if(cc&&mode==="new") cc.addEventListener("input",e=>{ const v=e.target.value.trim(); if(v.length===6) checkCode(e); else { $("#acc-cn").textContent=""; } }); }
+function closeAuth(){ ov.hidden=true; document.body.classList.remove("acc-on"); }
+ov.addEventListener("click",e=>{ const m=e.target.closest("[data-m]"); if(m){ openAuth(m.dataset.m); return; } if(e.target.closest("[data-skip]")){ try{ sessionStorage.setItem("alp-guest","1"); }catch(_){} closeAuth(); } });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!ov.hidden){ try{ sessionStorage.setItem("alp-guest","1"); }catch(_){} closeAuth(); } });
+async function codeInfo(v){ const {data}=await sb.rpc("class_info",{class_code:v}); if(!data) throw new Error("That class code was not recognised. Check it with your teacher.");
+  if(data.site!==SITE){ const o=SITES[data.site]||["another course",""]; throw new Error(`That code is for a ${o[0]} class. Use it on ${o[1]} — your username and password work there too.`); } return data; }
+async function checkCode(e){ const v=e.target.value.trim(), out=$("#acc-cn"), er=$("#acc-e"); out.textContent=""; er.textContent=""; if(!v) return; try{ const d=await codeInfo(v); out.textContent=`Class: ${d.name}`; }catch(x){ er.textContent=x.message; } }
+const email=u=>`${u.trim().toLowerCase()}@${DOMAIN}`;
+function nice(err){ const m=(err&&err.message)||String(err||""); if(/invalid login/i.test(m)) return "Username or password is not right."; if(/already registered|already exists/i.test(m)) return "That username is already taken. Try another."; if(/invalid teacher code/i.test(m)) return "The teacher code was not accepted."; if(/invalid class code/i.test(m)) return "The class code was not accepted. Check it with your teacher."; if(/invalid username/i.test(m)) return "Usernames are 3–30 characters: letters, numbers, dots, dashes or underscores."; if(/database error/i.test(m)) return mode==="teacher"?"The teacher code was not accepted.":"The class code was not accepted. Check it with your teacher."; if(/rate limit|too many/i.test(m)) return "Too many attempts from this network. Wait a minute and try again."; if(/fetch|network/i.test(m)) return "Could not reach the server. Check your internet connection."; return m; }
+async function submit(e){ e.preventDefault(); const f=e.target, err=$("#acc-e"), btn=f.querySelector('button[type="submit"]'); const v=n=>(f.elements[n]?f.elements[n].value:"").trim(); err.textContent="";
+  const u=v("u").toLowerCase(); if(!/^[a-z0-9._-]{3,30}$/.test(u)){ err.textContent="Usernames are 3–30 letters, numbers, dots, dashes or underscores."; return; }
+  btn.disabled=true;
+  try{
+    if(mode==="in"){ const {error}=await sb.auth.signInWithPassword({email:email(u),password:f.elements.p.value}); if(error) throw error; }
+    else { if(f.elements.p.value!==f.elements.p2.value){ throw new Error("The two passwords do not match."); }
+      const meta={username:u,display_name:v("n")}; if(mode==="teacher") meta.teacher_code=v("c"); else { await codeInfo(v("c")); meta.class_code=v("c"); }
+      const {data,error}=await sb.auth.signUp({email:email(u),password:f.elements.p.value,options:{data:meta}}); if(error) throw error;
+      if(!data.session){ const r=await sb.auth.signInWithPassword({email:email(u),password:f.elements.p.value}); if(r.error) throw new Error("Account created, but sign-in failed. In Supabase, turn off \"Confirm email\" (see the setup guide)."); } }
+    closeAuth(); await afterSignIn(true);
+  }catch(x){ err.textContent=nice(x); } btn.disabled=false; }
+
+async function loadProfile(){ const {data}=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle(); profile=data; }
+async function afterSignIn(fresh){ const {data:{session}}=await sb.auth.getSession(); user=session?session.user:null; if(!user){ renderMenu(); return; }
+  await loadProfile(); renderMenu(); const changed=await pull(); showSync(); if(changed){ location.reload(); return; } if(fresh&&LEARN.mark) LEARN.mark();
+  if(profile&&profile.role!=="teacher"){ let asked=false; try{ asked=sessionStorage.getItem("alp-join-asked")==="1"; }catch(_){}
+    if(!asked&&!(await myClassesHere()).length){ try{ sessionStorage.setItem("alp-join-asked","1"); }catch(_){} openJoin(true); } } }
+async function myClassesHere(){ const {data:m}=await sb.from("memberships").select("class_id").eq("user_id",user.id); const ids=(m||[]).map(r=>r.class_id); if(!ids.length) return [];
+  const {data:c}=await sb.from("classes").select("id,name,site").in("id",ids).eq("site",SITE); return c||[]; }
+function openJoin(first){ ov.innerHTML=`<div class="acc-box"><h2 id="acc-h">Join your ${esc(SITENAME)} class</h2><p class="muted">${first?`You're signed in, but not yet in a ${esc(SITENAME)} class. `:""}Type the class code from your teacher so they can see your progress.</p><form class="acc-form" id="acc-j"><label>Class code<input name="c" required autocomplete="off" autocapitalize="characters" maxlength="10"></label><div class="acc-err" id="acc-e" role="alert"></div><span class="ok-note" id="acc-cn"></span><button class="btn primary" type="submit">Join class</button></form><div class="acc-links"><button data-skip>${first?"Not now":"Cancel"}</button></div></div>`;
+  ov.hidden=false; document.body.classList.add("acc-on"); const f=$("#acc-j"); setTimeout(()=>f.elements.c.focus(),30);
+  f.addEventListener("submit",async e=>{ e.preventDefault(); const er=$("#acc-e"), b=f.querySelector("button"); er.textContent=""; b.disabled=true;
+    try{ await codeInfo(f.elements.c.value.trim()); const {data,error}=await sb.rpc("join_class",{class_code:f.elements.c.value.trim()}); if(error) throw error; $("#acc-cn").textContent=`Joined ${data.name}.`; setTimeout(closeAuth,900); }catch(x){ er.textContent=nice(x); } b.disabled=false; }); }
+
+/* ---------- teacher dashboard ---------- */
+const td=document.createElement("div"); td.id="td"; td.hidden=true; td.setAttribute("role","dialog"); td.setAttribute("aria-modal","true"); td.setAttribute("aria-labelledby","td-h"); document.body.appendChild(td);
+let classes=[], cur=null, students=[], prog={}, sel=null;
+/* map course structure once */
+const lessons=LAB.list.filter(p=>p.unit), lessonIds=new Set(lessons.map(p=>p.id));
+const units=(window.HUB_UNITS||[]).filter(u=>u.key!=="lab"&&u.key!=="papers");
+const unitOf=id=>{ const p=LAB.list.find(q=>q.id===id); return p&&units.find(u=>u.groups.some(([g])=>g===p.group)); };
+const cqTotal={}; lessons.forEach(p=>{ const s=document.getElementById("lab-"+p.id); cqTotal[p.id]=s?s.querySelectorAll(".qi[data-q]").length:0; });
+const partLesson={}; Object.values(EXAM.PARTS).forEach(q=>{ const c=document.getElementById(q.card), s=c&&c.closest("section.lab"); if(s) partLesson[q.id]=s.id.slice(4); });
+const PU=(window.HUB_UNITS||[]).find(u=>u.key==="papers"), PIDS=new Set();
+const PAPERS=PU?LAB.list.filter(p=>PU.groups.some(([g])=>g===p.group)).map(p=>{ PIDS.add(p.id); const g=PU.groups.find(([g])=>g===p.group); return {id:p.id,name:p.name.replace(/:.*$/,"").trim(),set:g?g[1]:""}; }):[];
+function partScore(p,s){ if(!s||!s.done) return null; if(p.opts) return s.c===p.a?1:0; if(p.lor) return +s.v||0; return (s.t||[]).filter(Boolean).length; }
+function stats(d){ d=d||{}; const done=new Set((d["learn-motion-done"]||[]).filter(id=>lessonIds.has(id))), cs=d["learn-check-state"]||{}, ex=d["learn-motion-exam"]||{}, act=d["alp-activity"]||{};
+  const R={done:done.size,cok:0,cq:0,em:0,emk:0,time:Object.values(act.time||{}).reduce((a,b)=>a+b,0),last:(act.days||[]).slice(-1)[0]||null,days:(act.days||[]).length,unit:{},paper:{}};
+  units.forEach(u=>R.unit[u.key]={n:0,done:0,cok:0,cq:0,em:0,emk:0,title:u.title});
+  lessons.forEach(p=>{ const u=unitOf(p.id); if(!u) return; const x=R.unit[u.key]; x.n++; if(done.has(p.id)) x.done++; x.cq+=cqTotal[p.id]; R.cq+=cqTotal[p.id]; });
+  Object.entries(cs).forEach(([k,v])=>{ const lid=k.split(":")[0]; const u=unitOf(lid); if(v==="ok"){ R.cok++; if(u) R.unit[u.key].cok++; } });
+  Object.values(EXAM.PARTS).forEach(p=>{ const v=partScore(p,ex[p.id]); if(v==null) return; const lid=partLesson[p.id], u=unitOf(lid);
+    if(PIDS.has(lid)){ const pp=R.paper[lid]=R.paper[lid]||{g:0,m:0}; pp.g+=v; pp.m+=p.m; } else { R.em+=v; R.emk+=p.m; if(u){ R.unit[u.key].em+=v; R.unit[u.key].emk+=p.m; } } });
+  return R; }
+const pc=(a,b)=>b?Math.round(a/b*100):null;
+const pcell=(a,b)=>{ const p=pc(a,b); return p==null?`<span class="muted">–</span>`:`<span class="td-pc ${p<50?"lo":p<70?"mid":"hi"}">${p} %</span>`; };
+const hm=s=>{ const m=Math.round(s/60); return m<60?`${m} min`:`${Math.floor(m/60)} h ${m%60} min`; };
+const dt=d=>d?new Date(d).toLocaleDateString([], {day:"numeric",month:"short"}):"never";
+async function openDash(){ td.hidden=false; document.body.classList.add("acc-on"); td.innerHTML=`<div class="td-box"><p class="muted">Loading…</p></div>`; await loadClasses(); renderDash(); }
+function closeDash(){ td.hidden=true; document.body.classList.remove("acc-on"); }
+async function loadClasses(){ const {data}=await sb.from("classes").select("*").eq("teacher_id",user.id).eq("site",SITE).order("created_at"); classes=data||[]; if(!cur&&classes.length) cur=classes[0].id; if(cur) await loadStudents(); }
+async function loadStudents(){ students=[]; prog={}; const {data:m}=await sb.from("memberships").select("user_id").eq("class_id",cur); const ids=(m||[]).map(r=>r.user_id);
+  if(ids.length){ const {data}=await sb.from("profiles").select("id,username,display_name,role,created_at").in("id",ids).order("username"); students=(data||[]).filter(s=>s.role!=="teacher"); }
+  if(students.length){ const {data:pr}=await sb.from("progress").select("user_id,data,updated_at").eq("site",SITE).in("user_id",students.map(s=>s.id)); (pr||[]).forEach(r=>prog[r.user_id]={data:r.data,updated:r.updated_at,st:stats(r.data)}); } }
+function renderDash(){ const c=classes.find(x=>x.id===cur);
+  const rows=students.map(s=>{ const p=prog[s.id]||{st:stats({})}, S=p.st; const pd=PAPERS.filter(x=>S.paper[x.id]), pg=pd.reduce((a,x)=>a+S.paper[x.id].g,0), pm=pd.reduce((a,x)=>a+S.paper[x.id].m,0); const papers=pd.length?`${pd.length} started · ${pcell(pg,pm)}`:"";
+    return `<tr data-s="${s.id}" tabindex="0"><td><b>${esc(s.display_name||s.username)}</b></td><td>${esc(s.username)}</td><td>${dt(p.updated)}</td><td class="num">${S.done} / ${lessons.length}</td><td class="num">${pcell(S.cok,S.cq)} <span class="muted">(${S.cok}/${S.cq})</span></td><td class="num">${pcell(S.em,S.emk)} <span class="muted">${S.emk?`(${S.em}/${S.emk})`:""}</span></td><td>${papers||`<span class="muted">none</span>`}</td><td class="num">${hm(S.time)}</td></tr>`; }).join("");
+  td.innerHTML=`<div class="td-box"><div class="td-top"><h2 id="td-h">Teacher dashboard · ${esc(SITENAME)}</h2><div class="td-actions"><button class="btn" id="td-ref">Refresh</button>${students.length?`<button class="btn" id="td-csv">Download CSV</button>`:""}<button class="btn" id="td-x" aria-label="Close dashboard">✕ Close</button></div></div>
+  <div class="td-classes">${classes.map(x=>`<button class="btn" data-c="${x.id}" aria-pressed="${x.id===cur}">${esc(x.name)}</button>`).join("")}<form class="td-new" id="td-nf"><input name="n" placeholder="New ${esc(SITENAME)} class name" maxlength="60" required aria-label="New class name"><button class="btn primary" type="submit">Create class</button></form></div>
+  ${c?`<div class="td-code"><span>Students join <b>${esc(c.name)}</b> with class code</span><b>${esc(c.code)}</b><span class="muted">New students choose “New student”; students with an account from another site choose “Join a class” in their account menu.</span><span style="flex:1"></span><button class="btn" id="td-del-c">Delete class</button></div>`:`<div class="td-empty">Create your first class. You will get a class code to give to your students.</div>`}
+  ${!classes.length?`<p class="muted" style="font-size:.9rem;margin:-6px 0 12px">Classes are separate for each site. Your ${esc(SITENAME)} classes appear here; classes on the other sites are managed from their dashboards.</p>`:""}${c?(students.length?`<div class="tbl-wrap"><table class="td-tbl"><thead><tr><th>Name</th><th>Username</th><th>Last saved</th><th class="num">Lessons done</th><th class="num">Check questions</th><th class="num">Lesson exam questions</th><th>Full papers</th><th class="num">Time</th></tr></thead><tbody>${rows}</tbody></table></div><p class="muted" style="font-size:.88rem;margin-top:8px">Percentages are of marks attempted and self-marked. Select a student for details and account options.</p>`:`<div class="td-empty">No students have joined this class yet.</div>`):""}
+  <div class="td-detail" id="td-d"></div></div>`;
+  if(sel&&students.some(s=>s.id===sel)) detail(sel); }
+function detail(id){ sel=id; const s=students.find(x=>x.id===id), p=prog[id]||{st:stats({})}, S=p.st;
+  const ur=units.map(u=>{ const x=S.unit[u.key]; return `<tr><td>${esc(x.title)}</td><td class="num">${x.done} / ${x.n}</td><td class="num">${pcell(x.cok,x.cq)}</td><td class="num">${pcell(x.em,x.emk)}</td></tr>`; }).join("");
+  const pr=PAPERS.map(x=>{ const q=S.paper[x.id]; return `<tr><td>${esc(x.set?x.set+" · ":"")}${esc(x.name)}</td><td class="num">${q?`${q.g} / ${q.m}`:"–"}</td><td class="num">${q?pcell(q.g,q.m):"<span class=\"muted\">not started</span>"}</td></tr>`; }).join("");
+  const opts=classes.filter(c=>c.id!==cur).map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("");
+  $("#td-d").innerHTML=`<div class="lcard"><h3>${esc(s.display_name||s.username)} <span class="muted" style="font-weight:400;font-size:.95rem">${esc(s.username)} · ${S.days} day${S.days===1?"":"s"} active · ${hm(S.time)}</span></h3>
+   <div class="td-two"><div class="tbl-wrap"><table class="tbl-mini"><tr><th>Unit</th><th>Lessons</th><th>Checks</th><th>Exam Qs</th></tr>${ur}</table></div><div class="tbl-wrap"><table class="tbl-mini"><tr><th>Full paper</th><th>Marks</th><th>Score</th></tr>${pr}</table></div></div>
+   <div class="td-actions" style="margin-top:14px"><button class="btn" id="td-pw">Reset password</button>${opts?`<select id="td-mv" aria-label="Move to class"><option value="">Move to class…</option>${opts}</select>`:""}<button class="btn" id="td-out">Remove from class</button><button class="btn" id="td-rm">Delete account</button></div></div>`;
+  $("#td-d").scrollIntoView({behavior:"smooth",block:"nearest"}); }
+td.addEventListener("click",async e=>{ const t=e.target;
+  if(t.closest("#td-x")){ closeDash(); return; }
+  if(t.closest("#td-ref")){ await loadClasses(); renderDash(); return; }
+  const cb=t.closest("[data-c]"); if(cb){ cur=cb.dataset.c; sel=null; await loadStudents(); renderDash(); return; }
+  const tr=t.closest("tr[data-s]"); if(tr){ detail(tr.dataset.s); return; }
+  if(t.closest("#td-csv")){ csv(); return; }
+  if(t.closest("#td-del-c")){ const c=classes.find(x=>x.id===cur); if(!confirm(`Delete the class “${c.name}”? Students keep their accounts and progress but leave the class.`)) return; const {error}=await sb.from("classes").delete().eq("id",cur); if(error){ alert(error.message); return; } cur=null; sel=null; await loadClasses(); renderDash(); return; }
+  if(t.closest("#td-pw")){ const np=prompt("New password for this student (at least 6 characters). Tell them the new password; they can keep using it."); if(!np) return; const {error}=await sb.rpc("reset_student_password",{student:sel,new_password:np}); alert(error?("Not changed: "+error.message):"Password changed."); return; }
+  if(t.closest("#td-out")){ const s=students.find(x=>x.id===sel); if(!confirm(`Remove ${s.display_name||s.username} from this class? Their account and progress are kept.`)) return; const {error}=await sb.rpc("remove_from_class",{student:sel,from_class:cur}); if(error){ alert(error.message); return; } sel=null; await loadStudents(); renderDash(); return; }
+  if(t.closest("#td-rm")){ const s=students.find(x=>x.id===sel); if(!confirm(`Permanently delete ${s.display_name||s.username}'s account and all their progress on every site?`)) return; const {error}=await sb.rpc("delete_student",{student:sel}); if(error){ alert(error.message); return; } sel=null; await loadStudents(); renderDash(); return; } });
+td.addEventListener("change",async e=>{ if(e.target.id==="td-mv"&&e.target.value){ const {error}=await sb.rpc("move_student",{student:sel,from_class:cur,to_class:e.target.value}); if(error){ alert(error.message); return; } sel=null; await loadStudents(); renderDash(); } });
+td.addEventListener("keydown",e=>{ if(e.key==="Enter"){ const tr=e.target.closest("tr[data-s]"); if(tr) detail(tr.dataset.s); } if(e.key==="Escape") closeDash(); });
+td.addEventListener("submit",async e=>{ if(e.target.id!=="td-nf") return; e.preventDefault(); const n=e.target.elements.n.value.trim(); if(!n) return; const {data,error}=await sb.rpc("create_class",{class_name:n,for_site:SITE}); if(error){ alert(error.message); return; } cur=(Array.isArray(data)?data[0]:data).id; sel=null; await loadClasses(); renderDash(); });
+function csv(){ const c=classes.find(x=>x.id===cur); const head=["Name","Username","Last saved","Lessons done","Lessons total","Check questions right","Check questions total","Lesson exam marks","Lesson exam marks attempted",...PAPERS.flatMap(p=>{ const n=(p.set?p.set+" · ":"")+p.name; return [`${n} marks`,`${n} attempted`]; }),"Minutes"];
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const lines=[head.map(q).join(",")].concat(students.map(s=>{ const p=prog[s.id]||{st:stats({})}, S=p.st; return [s.display_name||"",s.username,p.updated?new Date(p.updated).toISOString().slice(0,10):"",S.done,lessons.length,S.cok,S.cq,S.em,S.emk,...PAPERS.flatMap(x=>S.paper[x.id]?[S.paper[x.id].g,S.paper[x.id].m]:["",""]),Math.round(S.time/60)].map(q).join(","); }));
+  const url=URL.createObjectURL(new Blob(["﻿"+lines.join("\r\n")],{type:"text/csv"})); const a=document.createElement("a"); a.href=url; a.download=`${SITE}_${(c?c.name:"class").replace(/[^\w-]+/g,"_")}_progress.csv`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000); }
+
+/* ---------- start ---------- */
+(async()=>{ const {data:{session}}=await sb.auth.getSession(); if(session){ await afterSignIn(false); }
+  else { renderMenu(); let guest=false; try{ guest=sessionStorage.getItem("alp-guest")==="1"; }catch(_){} if(!guest) openAuth("in"); } })();
+window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; }};
+})();
+</script>
+
+</body></html>
