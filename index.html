@@ -6785,7 +6785,7 @@ if(!CFG.url||!CFG.key||/PASTE|YOUR/i.test(CFG.url+CFG.key)||!window.supabase) re
 const {$,$$,store}=LAB;
 const sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"alp-auth"}});
 const DOMAIN=CFG.emailDomain||"accounts.physicsalevel.prodigyai.uk";
-const SITES={"alevel-physics":["A Level Physics","physicsalevel.prodigyai.uk"],"gcse-physics":["GCSE Physics","physicsgcse.prodigyai.uk"],"gcse-maths":["GCSE Maths","mathsgcse.prodigyai.uk"],"gcse-chemistry":["GCSE Chemistry","chemistrygcse.prodigyai.uk"],"alevel-chemistry":["A Level Chemistry","chemistryalevel.prodigyai.uk"]};
+const SITES={"alevel-physics":["A Level Physics","physicsalevel.prodigyai.uk"],"gcse-physics":["GCSE Physics","physicsgcse.prodigyai.uk"],"gcse-maths":["GCSE Maths","mathsgcse.prodigyai.uk"],"gcse-chemistry":["GCSE Chemistry","chemistrygcse.prodigyai.uk"],"alevel-chemistry":["A Level Chemistry","chemistryalevel.prodigyai.uk"],"alevel-maths":["A Level Maths","mathsalevel.prodigyai.uk"]};
 const SITE=window.ALP_SITE&&SITES[window.ALP_SITE]?window.ALP_SITE:"alevel-physics", SITENAME=SITES[SITE][0];
 const isSync=k=>/^learn-/.test(k)||/^maths-/.test(k)||/^pl-.*-runs$/.test(k)||k==="alp-activity";
 const SPECIAL=new Set(["learn-motion-done","learn-check-state","learn-motion-exam","alp-activity"]);
@@ -6848,7 +6848,7 @@ $("#acc-pop").addEventListener("click",async e=>{ const a=e.target.closest("[dat
   if(a.dataset.acc==="out"){ await push(); await sb.auth.signOut(); clearLocal(); location.reload(); }
   else if(a.dataset.acc==="dash") openDash();
   else if(a.dataset.acc==="join") openJoin(false);
-  else if(a.dataset.acc==="del"){ if(!confirm("Delete your account and all your saved progress on every Prodigy site (A Level Physics and Chemistry, GCSE Physics, Chemistry and Maths)? This cannot be undone.")) return; const {error}=await sb.rpc("delete_my_account"); if(error){ alert("Sorry, the account could not be deleted: "+error.message); return; } await sb.auth.signOut(); clearLocal(); location.reload(); } });
+  else if(a.dataset.acc==="del"){ if(!confirm("Delete your account and all your saved progress on every Prodigy site (A Level Physics, Chemistry and Maths, GCSE Physics, Chemistry and Maths)? This cannot be undone.")) return; const {error}=await sb.rpc("delete_my_account"); if(error){ alert("Sorry, the account could not be deleted: "+error.message); return; } await sb.auth.signOut(); clearLocal(); location.reload(); } });
 
 /* ---------- sign-in / sign-up dialog ---------- */
 const ov=document.createElement("div"); ov.id="acc-ov"; ov.hidden=true; ov.setAttribute("role","dialog"); ov.setAttribute("aria-modal","true"); ov.setAttribute("aria-labelledby","acc-h"); document.body.appendChild(ov);
