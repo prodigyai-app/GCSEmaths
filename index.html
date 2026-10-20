@@ -1,5 +1,8 @@
 <!doctype html>
+<html lang="en">
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="numeric-tools.js"></script>
 <title>GCSE Maths</title>
 <meta name="description" content="Edexcel GCSE Maths: interactive lessons, topic tests and full practice papers for Foundation and Higher.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1043,14 +1046,12 @@ let restored=false;
 function restore(){ restored=true; document.querySelectorAll("section.lab .qi[data-q]").forEach(el=>{ const qid=el.dataset.q, k=qkey(qid); if(k&&CSAVED[k]) STATE[qid]=CSAVED[k]; }); Object.keys(QZ).forEach(id=>{ if(document.getElementById(id)&&QZ[id].some((_,i)=>STATE[`${id}-${i}`])) score(id); }); }
 
 /* parse a typed number: accepts 1.2e3, 1.2×10^3, 1.2 x 10^-3, commas */
-function num(s){ if(s==null) return NaN; s=String(s).trim().replace(/,/g,"").replace(/−/g,"-").replace(/\s+/g,"");
-  let m=s.match(/^([-+]?\d*\.?\d+)(?:[x×*]10\^?([-+]?\d+))$/i); if(m) return +m[1]*Math.pow(10,+m[2]);
-  return s===""?NaN:Number(s); }
+function num(s){ return NumericTools.parseNumber(s); }
 function grade(qid){ const [id,i]=qid.split(/-(?=\d+$)/), q=QZ[id][+i], fb=$(`#${qid}-fb`); let ok=false, ans;
   if(q.opts){ const sel=$(`input[name="${qid}"]:checked`); if(!sel){ fb.hidden=false; fb.className="qfb nok"; fb.innerHTML="Choose an answer first."; return; } ans=+sel.value; ok=ans===q.a;
     $$(`[data-q="${qid}"] .qo label`).forEach((l,j)=>{ l.classList.toggle("right",ok&&j===q.a); l.classList.toggle("wrong",!ok&&j===ans); }); }
-  else { const v=num($(`#${qid}-in`).value); if(isNaN(v)){ fb.hidden=false; fb.className="qfb nok"; fb.innerHTML="Type a number (you can write 3.2e-3 for 3.2 × 10⁻³)."; return; }
-    const tol=q.tol??0.02; ok=Math.abs(v-q.a)<=Math.abs(q.a)*tol+(q.abs||0)+1e-12; }
+  else { const v=num($(`#${qid}-in`).value); if(isNaN(v)){ fb.hidden=false; fb.className="qfb nok"; fb.innerHTML="Enter a number or expression, such as 1/2, sqrt(2) or 3.2e-3."; return; }
+    const tol=q.tol??0.02; ok=NumericTools.matches(v,q.a,tol,q.abs||0); }
   fb.hidden=false; fb.className="qfb "+(ok?"ok":"nok"); fb.innerHTML=(ok?"<b>Correct.</b> ":"<b>Not quite.</b> ")+(ok?(q.why||""):(q.hint?q.hint+" ":"")+"Try again, or show the answer.");
   STATE[qid]=ok||STATE[qid]==="shown"?(ok?"ok":"shown"):"no"; persist(qid); score(id); }
 function reveal(qid){ const [id,i]=qid.split(/-(?=\d+$)/), q=QZ[id][+i], fb=$(`#${qid}-fb`);
@@ -1170,7 +1171,7 @@ Object.entries({
 window.EXAM=(()=>{
 const {$,$$,store}=LAB, {num}=LEARN;
 const KEY="learn-motion-exam", saved=store.get(KEY)||{};
-let st; const save=()=>{ clearTimeout(st); st=setTimeout(()=>store.set(KEY,saved),250); };
+const save=()=>store.set(KEY,saved);
 const CARDS={}, PARTS={};
 const kind=`<span class="kind k-exam">Exam</span>`;
 const L="abcdefghij";
@@ -1192,7 +1193,7 @@ function partHTML(p,qi){ const s=saved[p.id]||{};
   let body="";
   if(p.opts){ body=`<div class="xmcq">${p.opts.map((o,j)=>`<label class="${s.done?(j===p.a?"right":(j===s.c?"wrong":"")):""}"><input type="radio" name="${p.id}" value="${j}" ${s.c===j?"checked":""}><span><b>${"ABCD"[j]}</b> ${o}</span></label>`).join("")}</div><div class="xbtns"><button class="btn primary" data-xmcq="${p.id}">Check</button></div>`; }
   else { body=window.EXAM_WORK&&!p.lor?window.EXAM_WORK(p,s):`<textarea class="xans" data-xw="${p.id}" rows="${p.lines||3}" aria-label="Your answer to part ${p.l}" placeholder="Write your answer and working here">${(s.w||"").replace(/</g,"&lt;")}</textarea>`;
-    if(p.ans) body+=`<div class="xfinal"><span>Final answer</span><input type="text" inputmode="decimal" data-xin="${p.id}" value="${s.f??""}" aria-label="Final answer" autocomplete="off"><span class="u">${p.ans.unit||""}</span><button class="btn" data-xchk="${p.id}">Check answer</button></div>`;
+    if(p.ans) body+=`<div class="xfinal"><span>Final answer</span><input type="text" inputmode="decimal" data-xin="${p.id}" value="${String(s.f??"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}" aria-label="Final answer" autocomplete="off"><span class="u">${p.ans.unit||""}</span><button class="btn" data-xchk="${p.id}">Check answer</button></div>`;
     body+=`<div class="xbtns"><button class="btn primary" data-xms="${p.id}">${s.done?(s.hid?"Show mark scheme":"Hide mark scheme"):"Mark it: show mark scheme"}</button></div>`; }
   let ms="";
   if(p.lor){ ms=`<div class="xmsh"><span>Levels of response mark scheme</span><span>Award: <select data-xlor="${p.id}">${Array.from({length:p.m+1},(_,i)=>`<option value="${i}" ${+s.v===i?"selected":""}>${i}</option>`).join("")}</select> / ${p.m}</span></div>${p.lor.map(([lv,d])=>`<div class="lv"><b>${lv}</b><span>${d}</span></div>`).join("")}${p.ind?`<div class="note"><b>Indicative scientific content</b><ul>${p.ind.map(x=>`<li>${x}</li>`).join("")}</ul></div>`:""}`; }
@@ -1225,14 +1226,17 @@ document.addEventListener("click",e=>{ const t=e.target.closest("[data-xms],[dat
   if(t.dataset.xmcq){ const sel=$(`input[name="${id}"]:checked`); const fb=$(`#${id}-fb`); if(!sel){ fb.hidden=false; fb.className="xfb nok"; fb.textContent="Choose an answer first."; return; } s.c=+sel.value; s.done=true; save(); rerender(p.card); return; }
   if(t.dataset.xms){ const ms=$(`#${id}-ms`); if(!s.done){ s.done=true; s.hid=false; if(!s.t) s.t=[]; } else s.hid=!s.hid; ms.hidden=!!s.hid; t.textContent=s.hid?"Show mark scheme":"Hide mark scheme"; save(); refresh(p.card); return; }
   if(t.dataset.xchk){ const raw=$(`[data-xin="${id}"]`).value, v=num(raw), fb=$(`#${id}-fb`); fb.hidden=false; s.f=raw;
-    if(isNaN(v)){ fb.className="xfb nok"; fb.textContent="Type a number (you can write 3.2e-3 for 3.2 × 10⁻³)."; save(); return; }
-    const a=p.ans, tol=a.tol??0.03, x=a.abs?Math.abs(v):v, ok=Math.abs(x-a.a)<=Math.abs(a.a)*tol+1e-12;
-    if(ok){ fb.className="xfb ok"; fb.innerHTML=`<b>Final answer correct.</b> In ${window.EXAM_BOARD||"OCR"} mark schemes a correct final answer normally earns full marks, so all ${p.m} are ticked. Check your working against the scheme anyway.`; s.done=true; s.hid=false; s.t=p.ms.map(()=>true); save(); const ms=$(`#${id}-ms`); ms.hidden=false; $$(`[data-xt="${id}"]`).forEach(c=>c.checked=true); $(`[data-xms="${id}"]`).textContent="Hide mark scheme"; refresh(p.card); }
+    if(isNaN(v)){ fb.className="xfb nok"; fb.textContent="Enter a number or expression, such as 1/2, sqrt(2) or 3.2e-3."; save(); return; }
+    const a=p.ans, tol=a.tol??0.03, x=a.abs?Math.abs(v):v, ok=NumericTools.matches(x,a.a,tol,a.atol??0);
+    if(ok){ const single=p.m===1&&p.ms.length===1;
+      fb.className="xfb ok"; fb.innerHTML=single?"<b>Final answer correct.</b> One mark awarded.":"<b>Final numerical value correct.</b> Open the mark scheme and tick the marks earned for working, accuracy and any explanation. A matching number alone does not establish all the required method marks.";
+      s.done=true; s.hid=false; s.t=s.t||[]; if(single) s.t=[true]; save();
+      const ms=$(`#${id}-ms`); ms.hidden=false; $$(`[data-xt="${id}"]`).forEach((c,j)=>c.checked=!!s.t[j]); $(`[data-xms="${id}"]`).textContent="Hide mark scheme"; refresh(p.card); }
     else { fb.className="xfb nok"; fb.innerHTML=`<b>That doesn't match.</b> ${a.hint||"Check your working, units and significant figures."} You can still pick up method marks: open the mark scheme to see which you earned.`; save(); } } });
 document.addEventListener("change",e=>{ const t=e.target;
   if(t.dataset.xt){ const id=t.dataset.xt, s=saved[id]=saved[id]||{}; s.t=s.t||[]; s.t[+t.dataset.j]=t.checked; if(s.a) s.a[+t.dataset.j]=false; save(); refresh(PARTS[id].card); }
   else if(t.dataset.xlor){ const id=t.dataset.xlor, s=saved[id]=saved[id]||{}; s.v=+t.value; s.done=true; save(); refresh(PARTS[id].card); } });
-document.addEventListener("input",e=>{ const t=e.target; if(t.dataset.xw){ const s=saved[t.dataset.xw]=saved[t.dataset.xw]||{}; s.w=t.value; save(); } });
+document.addEventListener("input",e=>{ const t=e.target, id=t.dataset.xw||t.dataset.xin; if(id){ const s=saved[id]=saved[id]||{}; if(t.dataset.xin) s.f=t.value; else s.w=t.value; save(); } });
 
 /* auto-marking hook: set or clear marks without revealing the scheme */
 function autoMark(id,arr){ const s=saved[id]=saved[id]||{}, p=PARTS[id]; s.t=s.t||[]; s.a=s.a||[]; let ch=false;
@@ -1580,60 +1584,19 @@ return {histogram,boxplots,pie,pictogram,tree,twoWay,grid,spinner,mono,cumfreq,a
 
 </script>
 <script>
-/* Step-by-step working for exam questions, with method marks awarded as each correct step appears */
+/* Saved step-by-step working, numerical final checks and explicit self-marking. */
 (()=>{
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=t=>String(t).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 const plain=h=>String(h).replace(/<sup>(.*?)<\/sup>/g,"^$1").replace(/<[^>]+>/g," ").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&nbsp;/g," ").replace(/&amp;/g,"&");
 
-/* ---- reading numbers and simple expressions ---- */
-const SUP={"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9","⁻":"-"};
-function norm(t){ return plain(t).replace(/[−–]/g,"-").replace(/×/g,"*").replace(/÷/g,"/").replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g,m=>"^"+[...m].map(c=>SUP[c]).join("")).replace(/½/g,"(1/2)").replace(/¼/g,"(1/4)").replace(/¾/g,"(3/4)").replace(/⅓/g,"(1/3)").replace(/(\d),(\d{3})/g,"$1$2").replace(/(\d) (\d{3})\b/g,"$1$2"); }
-function evalExpr(e){ e=e.replace(/√\s*\(/g,"Math.sqrt(").replace(/√\s*([\d.]+)/g,"Math.sqrt($1)").replace(/π/g,"Math.PI").replace(/\^/g,"**").replace(/(\d)\s*\(/g,"$1*(").replace(/\)\s*\(/g,")*(");
-  if(!/^[\d\s.+\-*/()]*(Math\.sqrt|Math\.PI|[\d\s.+\-*/()])*$/.test(e)) return NaN; if(!/\d/.test(e)) return NaN;
-  try{ const v=Function(`"use strict";return (${e})`)(); return typeof v==="number"&&isFinite(v)?v:NaN; }catch(_){ return NaN; } }
-/* all numbers a piece of text shows: literal numbers, and values of arithmetic chunks */
-function values(t){ const n=norm(t), out=[];
-  (n.match(/-?\d+(?:\.\d+)?(?:\s*\/\s*\d+(?:\.\d+)?)?/g)||[]).forEach(m=>{ const v=evalExpr(m); if(!isNaN(v)) out.push(v); const w=parseFloat(m); if(!isNaN(w)) out.push(w); });
-  n.split(/=|≈|,|;|\bor\b|\band\b|:/).forEach(seg=>{ (seg.match(/[\d\s.+\-*/()^√π]+/g)||[]).forEach(c=>{ c=c.trim(); if(/[+\-*/^√]/.test(c.replace(/^-/,""))&&/\d/.test(c)){ const v=evalExpr(c); if(!isNaN(v)) out.push(v); } }); });
-  return out; }
-const dp=v=>{ const s=String(v); const i=s.indexOf("."); return i<0?0:s.length-i-1; };
-function near(k,x){ if(Math.abs(k-x)<=1e-9*Math.max(1,Math.abs(k))) return true; const d=dp(k); if(d>=1) return Math.abs(k-x)<=0.5*Math.pow(10,-d)+1e-12; if(!Number.isInteger(k)) return Math.abs(k-x)<=Math.abs(k)*5e-4; return false; }
-const squash=t=>norm(t).toLowerCase().replace(/\s+/g,"").replace(/\*/g,"×");
-
-/* ---- the steps each part rewards ---- */
-function stepsFor(p){ if(p._steps) return p._steps;
-  const givenTxt=plain((p._stem||"").replace(/<svg[\s\S]*?<\/svg>/g," ")+" "+p.q), given=[...(norm(givenTxt).match(/-?\d+(?:\.\d+)?/g)||[]).map(Number),...(norm(givenTxt).match(/\d+\s*\/\s*\d+/g)||[]).map(f=>evalExpr(f))], gstr=squash(givenTxt);
-  const isGiven=v=>given.some(g=>Math.abs(g-v)<1e-9); p._given=given;
-  const keysFrom=(texts,curated)=>{ const nums=[], strs=[]; texts.forEach(t=>{ values(t).forEach(v=>{ if(!isGiven(v)&&!nums.some(n=>Math.abs(n-v)<1e-12)) nums.push(v); });
-      (plain(t).match(/-?[\d.]*[a-z][a-z\d²³]*(?:\s*[+\-−]\s*[\d.]*[a-z]?[\d²³]*)*/gi)||[]).forEach(w=>{ const q=squash(w); if(q.length>=(curated?3:2)&&(curated||/\d/.test(q))&&!gstr.includes(q)&&!/^(cm|mm|km|kg|ml|mph|mins?|hours?|or|and|so|the|of|to|is|in|on|by|a|an|it|at|be|as|oe|yes|no|ft|seen|not|are|has|have|then|than|from|with)$/.test(q)) strs.push(q); }); });
-    return {nums,strs}; };
-  let steps=[];
-  if(p.wk) steps=p.wk.map(arr=>({nums:arr.filter(x=>typeof x==="number"),strs:arr.filter(x=>typeof x==="string"&&!x.startsWith("seq:")).map(squash),seqs:arr.filter(x=>typeof x==="string"&&x.startsWith("seq:")).map(x=>x.slice(4).split(",").map(Number))}));
-  else if(p.help) p.help.forEach(line=>{ const blanks=[...line.split("||")[0].matchAll(/\[\[(.+?)\]\]/g)].map(m=>m[1].split("|")); if(!blanks.length) return;
-      const k=keysFrom(blanks.flat(),true); if(k.nums.length||k.strs.length) steps.push(k); });
-  else (p.ms||[]).forEach(([c,t])=>{ if(/^[MP]/.test(c)){ const k=keysFrom([t],false); steps.push(k); } });
-  return p._steps=steps; }
-function lineVals(line,given){ const n=norm(line), lit=(n.match(/-?\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g)||[]);
-  if(lit.length<=1) return values(line);
-  const res=[]; n.split(/=|≈/).forEach((seg,i)=>{ const vs=values(seg); if(i>0) res.push(...vs); else vs.forEach(v=>{ if(!(given||[]).some(g=>Math.abs(g-v)<1e-9)) res.push(v); }); }); return res; }
-function lineHits(line,steps,given){ const vs=lineVals(line,given), sq=squash(line), lit=(norm(line).match(/-?\d+(?:\.\d+)?/g)||[]).map(Number); const hit=[];
-  steps.forEach((st,i)=>{ if(st.nums.some(k=>vs.some(x=>near(k,x)))||st.strs.some(s=>s.length>=2&&sq.includes(s))||(st.seqs||[]).some(q=>lit.some((_,a)=>q.every((v,b)=>lit[a+b]!==undefined&&Math.abs(lit[a+b]-v)<1e-9)))) hit.push(i); }); return hit; }
-
 /* ---- marking ---- */
-function mark(p,lines){ const steps=stepsFor(p), ms=p.ms||[]; const G=p._given||[]; const hitsBy=lines.map(l=>l.trim()?lineHits(l,steps,G):[]);
-  const matched=new Set(hitsBy.flat()); const S=steps.length;
-  let finalOK=false; if(p.ans){ const a=p.ans; finalOK=lines.some(l=>lineVals(l,G).some(x=>near(a.a,a.abs?Math.abs(x):x)||Math.abs(x-a.a)<=Math.abs(a.a)*(a.tol??0.03)+1e-12)); }
-  if(!finalOK&&S&&matched.has(S-1)&&p.help) finalOK=true;
-  const mIdx=ms.map((r,j)=>/^[MP]/.test(r[0])?j:-1).filter(j=>j>=0), K=mIdx.length;
-  const maxHit=matched.size?Math.max(...matched):-1;
-  const award=ms.map(()=>false), by=ms.map(()=>-1);
-  mIdx.forEach((j,r)=>{ if(finalOK){ award[j]=true; return; } if(!S) return; const start=Math.floor(r*S/K); if(maxHit>=start){ award[j]=true; } });
-  ms.forEach(([c],j)=>{ if(/^[AB]/.test(c)&&finalOK) award[j]=true; });
-  /* which line earned which mark (first line reaching the needed step) */
-  mIdx.forEach((j,r)=>{ if(!award[j]) return; const start=S?Math.floor(r*S/K):0; const li=hitsBy.findIndex(h=>h.some(i=>i>=start)); by[j]=li>=0?li:lines.length-1; });
-  ms.forEach(([c],j)=>{ if(/^[AB]/.test(c)&&award[j]){ const li=lines.findIndex(l=>p.ans?lineVals(l,G).some(x=>near(p.ans.a,x)||Math.abs(x-p.ans.a)<=Math.abs(p.ans.a)*(p.ans.tol??0.03)+1e-12):lineHits(l,steps,G).includes(S-1)); by[j]=li; } });
-  return {award,by,hitsBy}; }
+function mark(p,lines){
+  // Working may contain intermediate values equal to a final answer. It cannot
+  // establish that the requested method, equation or proof has been completed.
+  // Final numeric answers are checked explicitly with the Check answer button.
+  const ms=p.ms||[];
+  return {award:ms.map(()=>false),by:ms.map(()=>-1),hitsBy:lines.map(()=>[])}; }
 
 /* ---- the UI ---- */
 const rowHTML=(id,i,v)=>`<div class="wrow"><span class="wn">${i+1}</span><input class="wl" data-wl="${id}" value="${esc(v)}" placeholder="${i?"Next step":"Step 1: write your first line of working"}" autocomplete="off" spellcheck="false" aria-label="Working, step ${i+1}"><span class="wst" aria-live="polite"></span></div>`;
@@ -1644,10 +1607,9 @@ function update(id){ const box=document.querySelector(`[data-ws="${id}"]`), p=EX
   const ins=$$(".wl",box), lines=ins.map(i=>i.value), r=mark(p,lines);
   ins.forEach((inp,i)=>{ const codes=(p.ms||[]).map((m,j)=>r.by[j]===i?m[0]:null).filter(Boolean), st=inp.parentNode.querySelector(".wst"), good=codes.length>0||(r.hitsBy[i]||[]).length>0;
     inp.classList.toggle("ok",good&&!!inp.value.trim()); st.innerHTML=codes.length?`✓ ${codes.join(" ")}`:(good&&inp.value.trim()?"✓":""); });
-  const got=r.award.filter(Boolean).length, tot=(p.ms||[]).length;
-  const sum=document.getElementById(id+"-wsum"); if(sum) sum.textContent=lines.some(l=>l.trim())?`Marks from your working so far: ${got} / ${p.m}`:"";
+  const sum=document.getElementById(id+"-wsum"); if(sum) sum.textContent=lines.some(l=>l.trim())?`Working saved. Use Check answer for a numerical final answer, or self-mark against the mark scheme.`:"";
   const s=EXAM.saved[id]=EXAM.saved[id]||{}; s.lines=lines; delete s.w; EXAM.autoMark(id,r.award); EXAM.save&&EXAM.save(); }
-let tm={}; document.addEventListener("input",e=>{ const t=e.target; if(t.dataset&&t.dataset.wl){ const id=t.dataset.wl; clearTimeout(tm[id]); tm[id]=setTimeout(()=>update(id),250); } });
+let tm={}; document.addEventListener("input",e=>{ const t=e.target; if(t.dataset&&t.dataset.wl){ const id=t.dataset.wl, box=t.closest("[data-ws]"), s=EXAM.saved[id]=EXAM.saved[id]||{}; s.lines=$$(".wl",box).map(input=>input.value); delete s.w; EXAM.save(); clearTimeout(tm[id]); tm[id]=setTimeout(()=>update(id),250); } });
 function addRow(id,after){ const box=document.querySelector(`[data-ws="${id}"] .wrows`); const n=box.children.length; const d=document.createElement("div"); d.innerHTML=rowHTML(id,n,""); const row=d.firstChild; if(after&&after.nextSibling) box.insertBefore(row,after.nextSibling); else box.appendChild(row); renum(box); row.querySelector("input").focus(); }
 function renum(box){ $$(".wrow",box).forEach((r,i)=>{ r.querySelector(".wn").textContent=i+1; const inp=r.querySelector("input"); inp.placeholder=i?"Next step":"Step 1: write your first line of working"; inp.setAttribute("aria-label",`Working, step ${i+1}`); }); }
 document.addEventListener("click",e=>{ const b=e.target.closest("[data-wadd]"); if(b) addRow(b.dataset.wadd); });
@@ -1656,7 +1618,7 @@ document.addEventListener("keydown",e=>{ const t=e.target; if(!t.dataset||!t.dat
   else if(e.key==="Backspace"&&!t.value&&box.children.length>1){ e.preventDefault(); const pv=row.previousElementSibling||row.nextElementSibling; row.remove(); renum(box); const pi=pv.querySelector("input"); pi.focus(); pi.setSelectionRange(pi.value.length,pi.value.length); update(t.dataset.wl); } });
 /* show statuses for saved working, and after a card re-renders */
 function refreshAll(root=document){ $$("[data-ws]",root).forEach(b=>{ const id=b.dataset.ws; if($$(".wl",b).some(i=>i.value.trim())) update(id); }); }
-window.MSTEPS={refreshAll,mark,stepsFor,values};
+window.MSTEPS={refreshAll,mark};
 if(document.readyState==="complete") setTimeout(()=>refreshAll(),50); else window.addEventListener("load",()=>setTimeout(()=>refreshAll(),50));
 new MutationObserver(ms=>ms.forEach(m=>{ if(m.target.classList&&m.target.classList.contains("exam")) refreshAll(m.target); })).observe(document.querySelector(".wrap"),{childList:true,subtree:true});
 })();
@@ -2068,7 +2030,7 @@ lesson({id:"nu9",group:"r",num:10,lvl:"Review",name:"Number: review and exam pra
 (()=>{
 const {attach}=EXAM, {fr,NC,CA}=M;
 const F=MPF;
-const T="Exam-style questions", I=`Write your working one step per line: each correct step is ticked and earns its method mark as you go. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
+const T="Exam-style questions", I=`Write your working one step per line: use Check answer for numerical final values and self-mark algebra and method marks. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
 
 attach("nu1",{title:T,intro:I,qs:[
  {stem:`<p>${NC}</p>`,parts:[
@@ -2849,7 +2811,7 @@ lesson({id:"al13",group:"r",num:16,lvl:"Review",name:"Algebra: review and exam p
 (()=>{
 const {attach}=EXAM, {fr,NC,CA}=M;
 const F=MPF;
-const T="Exam-style questions", I=`Write your working one step per line: each correct step is ticked and earns its method mark as you go. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
+const T="Exam-style questions", I=`Write your working one step per line: use Check answer for numerical final values and self-mark algebra and method marks. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
 
 attach("al1",{title:T,intro:I,qs:[
  {stem:`<p>${NC}</p>`,parts:[
@@ -3322,7 +3284,7 @@ lesson({id:"ra8",group:"r",num:8,lvl:"Review",name:"Ratio: review and exam pract
 (()=>{
 const {attach}=EXAM, {fr,NC,CA}=M;
 const F=MPF;
-const T="Exam-style questions", I=`Write your working one step per line: each correct step is ticked and earns its method mark as you go. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
+const T="Exam-style questions", I=`Write your working one step per line: use Check answer for numerical final values and self-mark algebra and method marks. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
 
 attach("ra1",{title:T,intro:I,qs:[
  {stem:`<p>${NC} Jen, Kai and Leo share some sweets in the ratio 2 : 3 : 7. Leo gets 32 more sweets than Kai.</p>`,parts:[
@@ -4080,7 +4042,7 @@ lesson({id:"ge12",group:"r",num:15,lvl:"Review",name:"Geometry: review and exam 
 const {attach}=EXAM, {fr,NC,CA}=M;
 const colv=(a,b)=>`<span class="cv"><span class="cvi"><span>${a}</span><span>${b}</span></span></span>`;
 const F=MPF,{L,shape,fig}=MPF;
-const T="Exam-style questions", I=`Write your working one step per line: each correct step is ticked and earns its method mark as you go. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
+const T="Exam-style questions", I=`Write your working one step per line: use Check answer for numerical final values and self-mark algebra and method marks. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
 
 attach("ge1",{title:T,intro:I,qs:[
  {stem:`<p>${NC} ABC is an isosceles triangle with AB = AC. Angle BAC = 46°. BC is extended to D.</p>${fig(300,165,shape([[130,20],[60,140],[200,140]],{v:["A","B","C"],a:[[0,"46°"]]})+M.ln(200,140,280,140)+M.tx(286,145,"D",{s:15,a:"start"})+M.ang(200,140,24,0,120)+L(232,122,"?",{a:"start"}))}`,parts:[
@@ -4440,7 +4402,7 @@ lesson({id:"pr5",group:"r",num:5,lvl:"Review",name:"Probability: review and exam
 (()=>{
 const {attach}=EXAM, {fr,NC,CA}=M;
 const F=MPF;
-const T="Exam-style questions", I=`Write your working one step per line: each correct step is ticked and earns its method mark as you go. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
+const T="Exam-style questions", I=`Write your working one step per line: use Check answer for numerical final values and self-mark algebra and method marks. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
 const tbl=`<table class="mtbl"><tr><th>Colour</th><th>Red</th><th>Blue</th><th>Green</th><th>Yellow</th></tr><tr><td>Probability</td><td>0.2</td><td>x</td><td>0.35</td><td>2x</td></tr></table>`;
 
 attach("pr1",{title:T,intro:I,qs:[
@@ -4786,7 +4748,7 @@ lesson({id:"st6",group:"r",num:7,lvl:"Review",name:"Statistics: review and exam 
 (()=>{
 const {attach}=EXAM, {fr,NC,CA}=M;
 const F=MPF;
-const T="Exam-style questions", I=`Write your working one step per line: each correct step is ticked and earns its method mark as you go. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
+const T="Exam-style questions", I=`Write your working one step per line: use Check answer for numerical final values and self-mark algebra and method marks. Then open the mark scheme to check, and tick or untick marks yourself. Edexcel mark codes: M = method, A = accuracy (needs the method), B = independent mark, P = process, C = communication. Numerical parts can be checked automatically.`;
 
 attach("st1",{title:T,intro:I,qs:[
  {stem:`<p>${CA} The table shows the weights of 40 parcels.</p><table class="mtbl"><tr><th>Weight w (kg)</th><th>Frequency</th></tr><tr><td>0 &lt; w ≤ 2</td><td>6</td></tr><tr><td>2 &lt; w ≤ 4</td><td>15</td></tr><tr><td>4 &lt; w ≤ 6</td><td>12</td></tr><tr><td>6 &lt; w ≤ 8</td><td>7</td></tr></table>`,parts:[
@@ -4880,7 +4842,7 @@ function paper(cfg){
 <li>${calc?"You <b>may</b> use a calculator.":"You must <b>not</b> use a calculator."}</li>
 <li>Answer <b>all</b> questions. Show all your working: marks are given for method even if the answer is wrong.</li>
 <li>Diagrams are <b>not</b> accurately drawn unless otherwise indicated.</li>
-<li>Write your working one step per line. In Help mode (or once you open a mark scheme) each correct step is ticked and its method mark shown.</li>
+<li>Write your working one step per line. Use Check answer for numerical final values, then use the mark scheme to award algebra and method marks.</li>
 <li>When you finish, open each mark scheme and tick the marks you earned. Check your answers if you have time.</li></ul>
 <div class="mode"><div class="tier-switch" role="group" aria-label="Help mode"><button type="button" data-helpmode="${cfg.id}" data-on="0">Exam mode</button><button type="button" data-helpmode="${cfg.id}" data-on="1">Help mode</button></div><p>Help mode adds a <b>Help</b> box under each question with the steps to fill in. Each box turns green as soon as it is right.</p></div></div>`;
   EXAM.paper({id:cfg.id,num:cfg.num,group:(T==="Foundation"?"f":"h")+(set>1?set:""),lvl:`Set ${set} · Paper ${code}`,name:`Paper ${n} · ${calc?"Calculator":"Non-calculator"}`,icon:"paper",tag:`${T} tier`,
