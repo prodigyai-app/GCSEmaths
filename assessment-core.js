@@ -4,7 +4,7 @@
 const SITES = {
  'alevel-physics':['A Level Physics','ALevelPhysics'], 'alevel-chemistry':['A Level Chemistry','ALevelChemistry'],
  'alevel-biology':['A Level Biology','ALevelBiology'], 'alevel-maths':['A Level Maths','ALevelMaths'],
- 'alevel-psychology':['A Level Psychology','ALevelPsychology'], 'gcse-physics':['GCSE Physics','GCSEPhysics'],
+ 'alevel-psychology':['A Level Psychology','ALevelPsychology'], 'alevel-sociology':['A Level Sociology','ALevelSociology'], 'gcse-physics':['GCSE Physics','GCSEPhysics'],
  'gcse-chemistry':['GCSE Chemistry','GCSEChemistry'], 'gcse-biology':['GCSE Biology','GCSEBiology'],
  'gcse-maths':['GCSE Maths','GCSEmaths'], 'gcse-combined':['Combined Science','GCSECombinedScience']
 };
@@ -33,7 +33,7 @@ function contextForPage(page, context={}) {
  const c={};
  if(page.tier)c.tier=page.tier;else if(context.tier==='f'||context.tier==='h') c.tier=context.tier;
  if(page.essays?.length) { if(!page.essays.includes(context.essay)) throw Error('Choose an essay topic first'); c.essay=context.essay; }
- if(page.selection) for(const n of [1,2,3]) c['option'+n]=page.selection[n];
+ if(page.selection) for(const n of [1,2,3]) if(page.selection[n]) c['option'+n]=page.selection[n];
  return c;
 }
 function requiredQuestions(page,context={}) {
