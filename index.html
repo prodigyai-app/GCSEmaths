@@ -1,8 +1,10 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
+<link rel="stylesheet" href="maths-keyboard.css?v=20261022-keyboard">
+<script src="math-notation.js?v=20261022-keyboard"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="numeric-tools.js"></script>
+<script src="numeric-tools.js?v=20261022-keyboard"></script>
 <title>GCSE Maths</title>
 <meta name="description" content="Edexcel GCSE Maths: interactive lessons, topic tests and full practice papers for Foundation and Higher.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1449,8 +1451,8 @@ const tech=(title,steps)=>`<div class="tech"><h4>${title}</h4><ol>${steps.map(s=
    items: {q, lines:["3x + 5 = 20","3x = [[15]]","x = [[5]]"], why}
    blank syntax [[ans|alt|alt]] ; optional note after "||" at end of a line */
 const FKEY="maths-fill", FS=store.get(FKEY)||{};
-function norm(s){ return String(s).toLowerCase().replace(/\s+/g,"").replace(/[−–]/g,"-").replace(/×/g,"*").replace(/÷/g,"/").replace(/²/g,"^2").replace(/³/g,"^3").replace(/^\+/,""); }
-function val(s){ s=norm(s); if(/^-?\d*\.?\d+$/.test(s)) return +s; let m=s.match(/^(-?\d+)\/(\d+)$/); if(m) return +m[1]/+m[2]; m=s.match(/^(-?\d+)(\d+)\/(\d+)$/); return NaN; }
+function norm(s){ return ProdigyMathNotation.normaliseMath(s).replace(/\^\((-?\w+)\)/g,"^$1").toLowerCase().replace(/\s+/g,"").replace(/^\+/,""); }
+function val(s){ const parsed=NumericTools.parseNumber(s); if(Number.isFinite(parsed))return parsed; s=norm(s); if(/^-?\d*\.?\d+$/.test(s)) return +s; let m=s.match(/^(-?\d+)\/(\d+)$/); if(m) return +m[1]/+m[2]; m=s.match(/^(-?\d+)(\d+)\/(\d+)$/); return NaN; }
 function same(a,b){ const A=norm(a), B=norm(b); if(A===B) return true; const x=val(a), y=val(b); return !isNaN(x)&&!isNaN(y)&&Math.abs(x-y)<=1e-9*Math.max(1,Math.abs(y)); }
 function fill(title,items,o={}){ const id="fl"+(++n);
   const body=items.map((it,i)=>{ const fid=`${id}-${i}`; let k=0;
@@ -6925,6 +6927,7 @@ window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; },get profile(){ re
 })();
 </script>
 
+<script src="maths-keyboard.js?v=20261022-keyboard"></script>
 <script src="course-links.js"></script>
 <script src="assessment-core.js"></script>
 <script src="assignments.js"></script>

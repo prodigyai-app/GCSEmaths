@@ -3,9 +3,8 @@
   "use strict";
   function parseNumber(input) {
     if (input == null) return NaN;
-    let text = String(input).trim().replace(/[−–]/g, "-").replace(/×/g, "*").replace(/÷/g, "/")
-      .replace(/π/g, "pi").replace(/√/g, "sqrt").replace(/\*\*/g, "^")
-      .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, s => "^" + [...s].map(c => ({"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9","⁻":"-"})[c]).join(""));
+    const notation=typeof module==='object'&&module.exports?require('./math-notation.js'):root.ProdigyMathNotation;
+    let text = notation.normaliseMath(input).trim();
     // Only accept commas as thousands separators, never as a second expression.
     text = text.replace(/\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b/g, s => s.replace(/,/g, ""));
     if (!text || text.length > 300) return NaN;

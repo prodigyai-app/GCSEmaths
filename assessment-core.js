@@ -40,8 +40,15 @@ function requiredQuestions(page,context={}) {
  return page.questions.filter(q=>!(context.tier==='f'&&q.higher) && (!q.essay||q.essay===context.essay));
 }
 /* A bounded arithmetic parser: never eval student input. */
+function normaliseMath(input) {
+  const supers='⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺⁽⁾ˣʸⁿᵃᵇᶜᵉᵗᐟ',plain='0123456789-+()xynabcet/';
+  return String(input??'').replace(/⁽([^⁾]*)⁾/g,(_,s)=>'^('+[...s].map(c=>supers.includes(c)?plain[supers.indexOf(c)]:c).join('')+')').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺⁽⁾ˣʸⁿᵃᵇᶜᵉᵗᐟ]+/g,s=>{
+   const p=[...s].map(c=>plain[supers.indexOf(c)]).join('');
+   return /^\([^]*\)$/.test(p)?'^'+p:/^-?\d+$/.test(p)?'^'+p:'^('+p+')';
+  }).replace(/[−–]/g,'-').replace(/×/g,'*').replace(/[÷⁄]/g,'/').replace(/π/g,'pi').replace(/√/g,'sqrt').replace(/\*\*/g,'^');
+ }
 function parseNumber(input) {
- let s=String(input??'').trim().replace(/,/g,'').replace(/[−–]/g,'-').replace(/[×x]/g,'*').replace(/÷/g,'/').replace(/π/g,'pi').replace(/√/g,'sqrt');
+ let s=normaliseMath(input).trim().replace(/,/g,'').replace(/[−–]/g,'-').replace(/[×x]/g,'*').replace(/÷/g,'/').replace(/π/g,'pi').replace(/√/g,'sqrt');
  if(s.length>180) return NaN;
  const tokens=s.match(/(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?|sqrt|pi|[()+*/^\-]/gi)||[];
  if(tokens.join('').toLowerCase()!==s.replace(/\s+/g,'').toLowerCase()) return NaN;
@@ -49,7 +56,7 @@ function parseNumber(input) {
  function atom(){ if(++depth>24)throw Error();let v,t=tokens[i++];if(t==='('){v=expr();if(tokens[i++]!==')')throw Error();}else if(t?.toLowerCase()==='sqrt')v=Math.sqrt(atom());else if(t?.toLowerCase()==='pi')v=Math.PI;else if(t!==undefined&&isFinite(Number(t)))v=Number(t);else throw Error();depth--;return v; }
  function power(){let a=atom();if(tokens[i]==='^'){i++;a=a**unary();}return a;}
  function unary(){if(tokens[i]==='+'||tokens[i]==='-'){const t=tokens[i++];return(t==='-'?-1:1)*unary();}return power();}
- function term(){let a=unary();while(tokens[i]==='*'||tokens[i]==='/'){const t=tokens[i++],b=unary();a=t==='*'?a*b:a/b;}return a;}
+ function term(){let a=unary();while(tokens[i]==='*'||tokens[i]==='/'||tokens[i]==='('||/^(pi|sqrt)$/i.test(tokens[i]||'')){const implicit=tokens[i]==='('||/^(pi|sqrt)$/i.test(tokens[i]||''),t=implicit?'*':tokens[i++],b=unary();a=t==='*'?a*b:a/b;}return a;}
  function expr(){let a=term();while(tokens[i]==='+'||tokens[i]==='-'){const t=tokens[i++],b=term();a=t==='+'?a+b:a-b;}return a;}
  try{const v=expr();return i===tokens.length&&Number.isFinite(v)?v:NaN;}catch{return NaN;}
 }
@@ -101,5 +108,5 @@ function validateMark(result,q,text) {
  return {...result,criteria,source:'ai',max:q.m,provisional:true};
 }
 
-window.ProdigyAssessment={SITES,clone,esc,londonDate,validDate,statusOf,pageURL,contextForPage,requiredQuestions,parseNumber,answerText,answered,sanitiseAnswers,deterministicMark,summaryOf,providerConfig,MARK_SCHEMA,MARK_INSTRUCTIONS,validateMark};
+window.ProdigyAssessment={SITES,clone,esc,londonDate,validDate,statusOf,pageURL,contextForPage,requiredQuestions,normaliseMath,parseNumber,answerText,answered,sanitiseAnswers,deterministicMark,summaryOf,providerConfig,MARK_SCHEMA,MARK_INSTRUCTIONS,validateMark};
 })();
