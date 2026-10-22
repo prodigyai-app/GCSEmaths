@@ -1243,7 +1243,7 @@ function autoMark(id,arr){ const s=saved[id]=saved[id]||{}, p=PARTS[id]; s.t=s.t
   arr.forEach((on,j)=>{ if(on&&!s.t[j]){ s.t[j]=true; s.a[j]=true; ch=true; } else if(!on&&s.a[j]&&s.t[j]){ s.t[j]=false; s.a[j]=false; ch=true; } });
   if(arr.some(Boolean)&&!s.done){ s.done=true; s.hid=true; ch=true; }
   if(!ch) return; save(); $$(`[data-xt="${id}"]`).forEach(c=>c.checked=!!s.t[+c.dataset.j]); const b=$(`[data-xms="${id}"]`); if(b&&s.hid) b.textContent="Show mark scheme"; refresh(p.card); }
-return {graph,attach,build,refresh,allParts,pscore,PARTS,CARDS,saved,autoMark,save};
+return {graph,attach,build,refresh,allParts,pscore,PARTS,CARDS,saved,autoMark,save,rerender};
 })();
 
 </script>
@@ -6843,7 +6843,7 @@ async function submit(e){ e.preventDefault(); const f=e.target, err=$("#acc-e"),
 
 async function loadProfile(){ const {data}=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle(); profile=data; }
 async function afterSignIn(fresh){ const {data:{session}}=await sb.auth.getSession(); user=session?session.user:null; if(!user){ renderMenu(); return; }
-  await loadProfile(); renderMenu(); const changed=await pull(); showSync(); if(changed){ location.reload(); return; } if(fresh&&LEARN.mark) LEARN.mark();
+  await loadProfile(); renderMenu(); window.dispatchEvent(new Event("prodigy-account-change")); const changed=await pull(); showSync(); if(changed){ location.reload(); return; } if(fresh&&LEARN.mark) LEARN.mark();
   if(profile&&profile.role!=="teacher"){ let asked=false; try{ asked=sessionStorage.getItem("alp-join-asked")==="1"; }catch(_){}
     if(!asked&&!(await myClassesHere()).length){ try{ sessionStorage.setItem("alp-join-asked","1"); }catch(_){} openJoin(true); } } }
 async function myClassesHere(){ const {data:m}=await sb.from("memberships").select("class_id").eq("user_id",user.id); const ids=(m||[]).map(r=>r.class_id); if(!ids.length) return [];
@@ -6886,7 +6886,7 @@ async function loadStudents(){ students=[]; prog={}; const {data:m}=await sb.fro
 function renderDash(){ const c=classes.find(x=>x.id===cur);
   const rows=students.map(s=>{ const p=prog[s.id]||{st:stats({})}, S=p.st; const pd=PAPERS.filter(x=>S.paper[x.id]), pg=pd.reduce((a,x)=>a+S.paper[x.id].g,0), pm=pd.reduce((a,x)=>a+S.paper[x.id].m,0); const papers=pd.length?`${pd.length} started · ${pcell(pg,pm)}`:"";
     return `<tr data-s="${s.id}" tabindex="0"><td><b>${esc(s.display_name||s.username)}</b></td><td>${esc(s.username)}</td><td>${dt(p.updated)}</td><td class="num">${S.done} / ${lessons.length}</td><td class="num">${pcell(S.cok,S.cq)} <span class="muted">(${S.cok}/${S.cq})</span></td><td class="num">${pcell(S.em,S.emk)} <span class="muted">${S.emk?`(${S.em}/${S.emk})`:""}</span></td><td>${papers||`<span class="muted">none</span>`}</td><td class="num">${hm(S.time)}</td></tr>`; }).join("");
-  td.innerHTML=`<div class="td-box"><div class="td-top"><h2 id="td-h">Teacher dashboard · ${esc(SITENAME)}</h2><div class="td-actions"><button class="btn" id="td-ref">Refresh</button>${students.length?`<button class="btn" id="td-csv">Download CSV</button>`:""}<button class="btn" id="td-x" aria-label="Close dashboard">✕ Close</button></div></div>
+  td.innerHTML=`<div class="td-box"><div class="td-top"><h2 id="td-h">Teacher dashboard · ${esc(SITENAME)}</h2><div class="td-actions"><button class="btn" data-platform-assignments>Assignments</button><button class="btn" id="td-ref">Refresh</button>${students.length?`<button class="btn" id="td-csv">Download CSV</button>`:""}<button class="btn" id="td-x" aria-label="Close dashboard">✕ Close</button></div></div>
   <div class="td-classes">${classes.map(x=>`<button class="btn" data-c="${x.id}" aria-pressed="${x.id===cur}">${esc(x.name)}</button>`).join("")}<form class="td-new" id="td-nf"><input name="n" placeholder="New ${esc(SITENAME)} class name" maxlength="60" required aria-label="New class name"><button class="btn primary" type="submit">Create class</button></form></div>
   ${c?`<div class="td-code"><span>Students join <b>${esc(c.name)}</b> with class code</span><b>${esc(c.code)}</b><span class="muted">New students choose “New student”; students with an account from another site choose “Join a class” in their account menu.</span><span style="flex:1"></span><button class="btn" id="td-del-c">Delete class</button></div>`:`<div class="td-empty">Create your first class. You will get a class code to give to your students.</div>`}
   ${!classes.length?`<p class="muted" style="font-size:.9rem;margin:-6px 0 12px">Classes are separate for each site. Your ${esc(SITENAME)} classes appear here; classes on the other sites are managed from their dashboards.</p>`:""}${c?(students.length?`<div class="tbl-wrap"><table class="td-tbl"><thead><tr><th>Name</th><th>Username</th><th>Last saved</th><th class="num">Lessons done</th><th class="num">Check questions</th><th class="num">Lesson exam questions</th><th>Full papers</th><th class="num">Time</th></tr></thead><tbody>${rows}</tbody></table></div><p class="muted" style="font-size:.88rem;margin-top:8px">Percentages are of marks attempted and self-marked. Select a student for details and account options.</p>`:`<div class="td-empty">No students have joined this class yet.</div>`):""}
@@ -6921,8 +6921,10 @@ function csv(){ const c=classes.find(x=>x.id===cur); const head=["Name","Usernam
 /* ---------- start ---------- */
 (async()=>{ const {data:{session}}=await sb.auth.getSession(); if(session){ await afterSignIn(false); }
   else { renderMenu(); let guest=false; try{ guest=sessionStorage.getItem("alp-guest")==="1"; }catch(_){} if(!guest) openAuth("in"); } })();
-window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; }};
+window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; },get profile(){ return profile; },openSignIn:()=>openAuth("in")};
 })();
 </script>
 
+<script src="assessment-core.js"></script>
+<script src="assignments.js"></script>
 </body></html>
