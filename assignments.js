@@ -100,7 +100,7 @@ function initialise(){
  function backupKey(){return active&&user()?`platform-backup:${user().id}:${site}:${active.page_id}`:null;}
  function gather(questions=activeQuestions){const answers={};for(const q of questions){
   if(q.id.startsWith('check:')){const id=q.id.slice(6),el=document.querySelector(`[data-q="${CSS.escape(id)}"]`),choice=el?.querySelector('input[type=radio]:checked'),field=el?.querySelector('input[type=text]');answers[q.id]={c:choice?Number(choice.value):null,f:field?.value||'',w:'',self_score:null};}
-  else {const s=exam.saved[q.id]||{},p=exam.PARTS[q.id];answers[q.id]={w:s.w||'',f:s.f||'',c:s.c??null,self_score:p&&s.done?exam.pscore(p):null,self_ticks:s.t||[]};}
+  else {const s=exam.saved[q.id]||{},p=exam.PARTS[q.id],chosen=document.querySelector(`input[name="${CSS.escape(q.id)}"]:checked`);answers[q.id]={w:s.w||'',f:s.f||'',c:chosen?Number(chosen.value):s.c??null,self_score:p&&s.done?exam.pscore(p):null,self_ticks:s.t||[]};}
  }return answers;}
  function setAnswers(questions,answers){const cards=new Set();for(const q of questions){const a=answers?.[q.id]||{};
   if(q.id.startsWith('check:')){const id=q.id.slice(6),el=document.querySelector(`[data-q="${CSS.escape(id)}"]`);el?.querySelectorAll('input[type=radio]').forEach(i=>i.checked=Number(i.value)===a.c);const field=el?.querySelector('input[type=text]');if(field)field.value=a.f||'';}
@@ -108,11 +108,11 @@ function initialise(){
  }exam.save();cards.forEach(c=>exam.rerender(c));}
  function restoreIndependent(){const key=backupKey(),backup=key&&storage.get(key);if(backup){setAnswers(activeQuestions,backup);storage.set(key,null);}restoredId=null;}
  async function loadActive(){
-  if(!assignmentId||!user())return;try{const data=await api('detail',{id:assignmentId});if(data.students)return;active=data.assignment;activeSubmission=data.submission;activeQuestions=data.questions;paintActive();if(!activeSubmission&&currentPage()===active.page_id)saveActive(false);}catch(e){const sec=$('#lab-'+CSS.escape(currentPage()));if(sec){let b=sec.querySelector('.assignment-banner');if(!b){b=document.createElement('div');b.className='assignment-banner';sec.querySelector('.lab-head')?.after(b);}b.textContent=e.message;}}
+  if(!assignmentId||!user())return;try{const data=await api('detail',{id:assignmentId});if(data.students)return;active=data.assignment;activeSubmission=data.submission;activeQuestions=data.questions;if(active.site===site){const tier=active.context?.tier;if(tier&&window.TIER!==tier)document.querySelector(`.tier-switch [data-tier="${tier}"]`)?.click();if(currentPage()!==active.page_id)location.hash=active.page_id;}paintActive();if(!activeSubmission&&currentPage()===active.page_id)saveActive(false);}catch(e){const sec=$('#lab-'+CSS.escape(currentPage()));if(sec){let b=sec.querySelector('.assignment-banner');if(!b){b=document.createElement('div');b.className='assignment-banner';sec.querySelector('.lab-head')?.after(b);}b.textContent=e.message;}}
  }
  function paintActive(){
   if(!active)return;
-  if(active.site!==site||active.page_id!==currentPage()){if(restoredId)restoreIndependent();return;}
+  if(active.site!==site||active.page_id!==currentPage()){if(restoredId){saveActive(false,true);restoreIndependent();}return;}
   const sec=$('#lab-'+CSS.escape(active.page_id));if(!sec)return;
   if(restoredId!==active.id){
    const key=backupKey(),backup=storage.get(key);if(!backup){const b=gather();for(const q of activeQuestions)if(!q.id.startsWith('check:'))b[q.id]._state=clone(exam.saved[q.id]||{});storage.set(key,b);}
@@ -127,13 +127,13 @@ function initialise(){
   else {sec.querySelectorAll('[data-assignment-locked]').forEach(e=>{e.disabled=false;delete e.dataset.assignmentLocked;});const cached=storage.get(draftKey());banner.querySelector('[data-read-confirmed]').checked=cached?.read_confirmed??activeSubmission?.read_confirmed??false;banner.querySelector('[data-save-assignment]').onclick=()=>saveActive(false);banner.querySelector('[data-submit-assignment]').onclick=()=>saveActive(true);}
   decorate();
  }
- async function saveActive(submit=false){
-  if(!active||restoredId!==active.id||activeSubmission?.submitted_at||currentPage()!==active.page_id)return;
-  clearTimeout(saveTimer);const answers=gather(),confirmed=!!$('[data-read-confirmed]')?.checked;
-  const draft={answers,read_confirmed:confirmed,updated_at:new Date().toISOString()};storage.set(draftKey(),draft);const out=$('[data-save-status]');
+ async function saveActive(submit=false,leaving=false){
+  if(!active||restoredId!==active.id||activeSubmission?.submitted_at||!leaving&&currentPage()!==active.page_id)return;
+  clearTimeout(saveTimer);const stored=leaving?storage.get(draftKey()):null,answers=stored?.answers||gather(),confirmed=stored?.read_confirmed??!!$('[data-read-confirmed]')?.checked;
+  const draft={answers,read_confirmed:confirmed,updated_at:new Date().toISOString()},localKey=draftKey();storage.set(localKey,draft);const out=$('[data-save-status]');
   if(submit&&(!confirmed||!activeQuestions.every(q=>answered(q,answers[q.id])))){if(out)out.textContent='Answer every required question and confirm you have completed the work before submitting.';return;}
   const current=active.id;
-  saveChain=saveChain.catch(()=>{}).then(async()=>{try{if(out)out.textContent=submit?'Submitting…':'Saving…';const result=await api(submit?'submit':'save',{id:current,...draft});if(active?.id===current){activeSubmission=result.submission;storage.set(draftKey(),null);if(submit)paintActive();else if(out)out.textContent='Saved to your assignment.';}}catch(e){if(out)out.textContent=e.message+' A local draft is kept on this device.';}});return saveChain;
+  saveChain=saveChain.catch(()=>{}).then(async()=>{try{if(out)out.textContent=submit?'Submitting…':'Saving…';const result=await api(submit?'submit':'save',{id:current,...draft});if(active?.id===current){activeSubmission=result.submission;if(storage.get(localKey)?.updated_at===draft.updated_at)storage.set(localKey,null);if(submit)paintActive();else if(out)out.textContent='Saved to your assignment.';}}catch(e){if(out)out.textContent=e.message+' A local draft is kept on this device.';}});return saveChain;
  }
  function rememberDraft(){if(!active||restoredId!==active.id||activeSubmission?.submitted_at||currentPage()!==active.page_id)return;storage.set(draftKey(),{answers:gather(),read_confirmed:!!$('[data-read-confirmed]')?.checked,updated_at:new Date().toISOString()});clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveActive(false),2500);}
  function decorate(){
@@ -157,7 +157,7 @@ function initialise(){
    resultBox.querySelector('[data-use-ai]').onclick=()=>{if(answerText(exam.saved[p.id])!==text){resultBox.textContent='Your answer has changed. Request new feedback.';return;}const state=exam.saved[p.id]||{};state.done=true;state.source='ai-suggested';state.ai_answer=text;state.hid=true;if(p.lor)state.v=r.score;else state.t=p.ms.map((_,i)=>!!r.criteria.find(c=>c.index===i)?.awarded);exam.saved[p.id]=state;exam.save();exam.rerender(p.card);decorate();rememberDraft();};
   }catch(e){resultBox.textContent='AI marking is unavailable. Use the existing self-mark scheme. '+e.message;}finally{b.disabled=false;}
  }
- document.addEventListener('input',e=>{const id=e.target.dataset.xw||e.target.dataset.xin;if(id&&exam.saved[id]?.source==='ai-suggested'){const s=exam.saved[id];delete s.source;delete s.ai_answer;s.done=false;s.t=[];s.v=0;exam.save();exam.refresh(exam.PARTS[id].card);const box=e.target.closest('.xp')?.querySelector('[data-ai-result]');if(box)box.textContent='Answer changed. Request new feedback.';}if(e.target.closest('.lab'))rememberDraft();});
+ document.addEventListener('input',e=>{const id=e.target.dataset.xw||e.target.dataset.xin||e.target.closest('.xp')?.dataset.p;if(id&&exam.saved[id]?.source==='ai-suggested'&&answerText(exam.saved[id])!==exam.saved[id].ai_answer){const s=exam.saved[id];delete s.source;delete s.ai_answer;s.done=false;s.t=[];s.v=0;exam.save();exam.refresh(exam.PARTS[id].card);const box=e.target.closest('.xp')?.querySelector('[data-ai-result]');if(box)box.textContent='Answer changed. Request new feedback.';}if(e.target.closest('.lab'))rememberDraft();});
  document.addEventListener('change',e=>{if(e.target.dataset.xt||e.target.dataset.xlor){const id=e.target.dataset.xt||e.target.dataset.xlor;if(exam.saved[id]){exam.saved[id].source='self';exam.save();}}if(e.target.closest('.lab'))rememberDraft();});
  document.addEventListener('click',e=>{if(e.target.closest('[data-chk],[data-xmcq],[data-xchk],[data-xms]'))queueMicrotask(rememberDraft);});
  let queued=false;const route=()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;paintActive();decorate();});};
