@@ -1,0 +1,1152 @@
+{
+  "board": "Pearson Edexcel 1MA1",
+  "source": "https://qualifications.pearson.com/content/dam/pdf/GCSE/mathematics/2015/specification-and-sample-assesment/gcse-maths-2015-specification.pdf",
+  "checked": "2026-10-23",
+  "statements": [
+    {
+      "code": "N1",
+      "lessons": [
+        {
+          "id": "depth-order",
+          "title": "Ordering numbers and using a calculator"
+        }
+      ]
+    },
+    {
+      "code": "N2",
+      "lessons": [
+        {
+          "id": "nu11",
+          "title": "Negatives, BIDMAS and written methods"
+        },
+        {
+          "id": "nu3",
+          "title": "Calculating with fractions"
+        }
+      ]
+    },
+    {
+      "code": "N3",
+      "lessons": [
+        {
+          "id": "nu11",
+          "title": "Negatives, BIDMAS and written methods"
+        }
+      ]
+    },
+    {
+      "code": "N4",
+      "lessons": [
+        {
+          "id": "nu2",
+          "title": "Primes, HCF and LCM"
+        }
+      ]
+    },
+    {
+      "code": "N5",
+      "lessons": [
+        {
+          "id": "pr4",
+          "title": "Listing and counting outcomes"
+        }
+      ]
+    },
+    {
+      "code": "N6",
+      "lessons": [
+        {
+          "id": "depth-estimate",
+          "title": "Estimating powers, roots and calculations"
+        }
+      ]
+    },
+    {
+      "code": "N7",
+      "lessons": [
+        {
+          "id": "nu5",
+          "title": "Indices and roots"
+        },
+        {
+          "id": "depth-estimate",
+          "title": "Estimating powers, roots and calculations"
+        }
+      ]
+    },
+    {
+      "code": "N8",
+      "lessons": [
+        {
+          "id": "nu3",
+          "title": "Calculating with fractions"
+        },
+        {
+          "id": "nu7",
+          "title": "Surds"
+        }
+      ]
+    },
+    {
+      "code": "N9",
+      "lessons": [
+        {
+          "id": "nu6",
+          "title": "Standard form"
+        }
+      ]
+    },
+    {
+      "code": "N10",
+      "lessons": [
+        {
+          "id": "nu4",
+          "title": "Fractions, decimals and percentages"
+        },
+        {
+          "id": "depth-recur",
+          "title": "Recurring decimals and rational-number proofs"
+        }
+      ]
+    },
+    {
+      "code": "N11",
+      "lessons": [
+        {
+          "id": "depth-operators",
+          "title": "Fractions and percentages as operators"
+        }
+      ]
+    },
+    {
+      "code": "N12",
+      "lessons": [
+        {
+          "id": "depth-operators",
+          "title": "Fractions and percentages as operators"
+        }
+      ]
+    },
+    {
+      "code": "N13",
+      "lessons": [
+        {
+          "id": "ra2",
+          "title": "Best buys and proportion"
+        },
+        {
+          "id": "ra6",
+          "title": "Compound measures"
+        },
+        {
+          "id": "ge15",
+          "title": "Units and measures"
+        }
+      ]
+    },
+    {
+      "code": "N14",
+      "lessons": [
+        {
+          "id": "nu1",
+          "title": "Rounding and estimation"
+        },
+        {
+          "id": "depth-order",
+          "title": "Ordering numbers and using a calculator"
+        },
+        {
+          "id": "depth-estimate",
+          "title": "Estimating powers, roots and calculations"
+        },
+        {
+          "id": "depth-error",
+          "title": "Error intervals and sensible final accuracy"
+        }
+      ]
+    },
+    {
+      "code": "N15",
+      "lessons": [
+        {
+          "id": "nu1",
+          "title": "Rounding and estimation"
+        },
+        {
+          "id": "depth-estimate",
+          "title": "Estimating powers, roots and calculations"
+        },
+        {
+          "id": "depth-error",
+          "title": "Error intervals and sensible final accuracy"
+        }
+      ]
+    },
+    {
+      "code": "N16",
+      "lessons": [
+        {
+          "id": "nu8",
+          "title": "Bounds in calculations"
+        }
+      ]
+    },
+    {
+      "code": "A1",
+      "lessons": [
+        {
+          "id": "depth-language",
+          "title": "Expressions, equations, identities and substitution"
+        }
+      ]
+    },
+    {
+      "code": "A2",
+      "lessons": [
+        {
+          "id": "al4",
+          "title": "Rearranging formulae"
+        },
+        {
+          "id": "depth-language",
+          "title": "Expressions, equations, identities and substitution"
+        },
+        {
+          "id": "depth-machines",
+          "title": "Function machines and reversing operations"
+        }
+      ]
+    },
+    {
+      "code": "A3",
+      "lessons": [
+        {
+          "id": "depth-language",
+          "title": "Expressions, equations, identities and substitution"
+        }
+      ]
+    },
+    {
+      "code": "A4",
+      "lessons": [
+        {
+          "id": "al1",
+          "title": "Expanding and factorising"
+        },
+        {
+          "id": "al2",
+          "title": "Factorising quadratics"
+        },
+        {
+          "id": "al12",
+          "title": "Algebraic fractions and proof"
+        }
+      ]
+    },
+    {
+      "code": "A5",
+      "lessons": [
+        {
+          "id": "al4",
+          "title": "Rearranging formulae"
+        }
+      ]
+    },
+    {
+      "code": "A6",
+      "lessons": [
+        {
+          "id": "al12",
+          "title": "Algebraic fractions and proof"
+        }
+      ]
+    },
+    {
+      "code": "A7",
+      "lessons": [
+        {
+          "id": "al11",
+          "title": "Functions and iteration"
+        },
+        {
+          "id": "depth-machines",
+          "title": "Function machines and reversing operations"
+        }
+      ]
+    },
+    {
+      "code": "A8",
+      "lessons": [
+        {
+          "id": "ge4",
+          "title": "Pythagoras' theorem"
+        },
+        {
+          "id": "depth-coordinates",
+          "title": "Geometrical problems on coordinate axes"
+        }
+      ]
+    },
+    {
+      "code": "A9",
+      "lessons": [
+        {
+          "id": "al6",
+          "title": "Straight-line graphs"
+        },
+        {
+          "id": "depth-coordinates",
+          "title": "Geometrical problems on coordinate axes"
+        }
+      ]
+    },
+    {
+      "code": "A10",
+      "lessons": [
+        {
+          "id": "al6",
+          "title": "Straight-line graphs"
+        }
+      ]
+    },
+    {
+      "code": "A11",
+      "lessons": [
+        {
+          "id": "al8",
+          "title": "Solving quadratic equations"
+        },
+        {
+          "id": "al10",
+          "title": "Quadratic and other graphs"
+        }
+      ]
+    },
+    {
+      "code": "A12",
+      "lessons": [
+        {
+          "id": "al10",
+          "title": "Quadratic and other graphs"
+        },
+        {
+          "id": "al16",
+          "title": "Exponential, trig and circle graphs"
+        }
+      ]
+    },
+    {
+      "code": "A13",
+      "lessons": [
+        {
+          "id": "al17",
+          "title": "Graph transformations"
+        }
+      ]
+    },
+    {
+      "code": "A14",
+      "lessons": [
+        {
+          "id": "al15",
+          "title": "Real-life and distance\u2013time graphs"
+        },
+        {
+          "id": "ra7",
+          "title": "Rates of change from graphs"
+        }
+      ]
+    },
+    {
+      "code": "A15",
+      "lessons": [
+        {
+          "id": "ra7",
+          "title": "Rates of change from graphs"
+        }
+      ]
+    },
+    {
+      "code": "A16",
+      "lessons": [
+        {
+          "id": "al16",
+          "title": "Exponential, trig and circle graphs"
+        }
+      ]
+    },
+    {
+      "code": "A17",
+      "lessons": [
+        {
+          "id": "al3",
+          "title": "Linear equations"
+        },
+        {
+          "id": "al10",
+          "title": "Quadratic and other graphs"
+        }
+      ]
+    },
+    {
+      "code": "A18",
+      "lessons": [
+        {
+          "id": "al8",
+          "title": "Solving quadratic equations"
+        },
+        {
+          "id": "al12",
+          "title": "Algebraic fractions and proof"
+        }
+      ]
+    },
+    {
+      "code": "A19",
+      "lessons": [
+        {
+          "id": "al7",
+          "title": "Simultaneous equations"
+        },
+        {
+          "id": "depth-nonlinear",
+          "title": "Non-linear simultaneous equations and checking solutions"
+        }
+      ]
+    },
+    {
+      "code": "A20",
+      "lessons": [
+        {
+          "id": "al11",
+          "title": "Functions and iteration"
+        }
+      ]
+    },
+    {
+      "code": "A21",
+      "lessons": [
+        {
+          "id": "al3",
+          "title": "Linear equations"
+        }
+      ]
+    },
+    {
+      "code": "A22",
+      "lessons": [
+        {
+          "id": "al9",
+          "title": "Inequalities"
+        },
+        {
+          "id": "depth-quadratic-inequality",
+          "title": "Quadratic inequalities and connected regions"
+        }
+      ]
+    },
+    {
+      "code": "A23",
+      "lessons": [
+        {
+          "id": "depth-sequences",
+          "title": "Recognising special sequences and explaining rules"
+        }
+      ]
+    },
+    {
+      "code": "A24",
+      "lessons": [
+        {
+          "id": "al5",
+          "title": "Sequences and the nth term"
+        },
+        {
+          "id": "depth-sequences",
+          "title": "Recognising special sequences and explaining rules"
+        }
+      ]
+    },
+    {
+      "code": "A25",
+      "lessons": [
+        {
+          "id": "al5",
+          "title": "Sequences and the nth term"
+        }
+      ]
+    },
+    {
+      "code": "R1",
+      "lessons": [
+        {
+          "id": "ra6",
+          "title": "Compound measures"
+        },
+        {
+          "id": "ge15",
+          "title": "Units and measures"
+        }
+      ]
+    },
+    {
+      "code": "R2",
+      "lessons": [
+        {
+          "id": "ra2",
+          "title": "Best buys and proportion"
+        },
+        {
+          "id": "ge8",
+          "title": "Constructions, loci and bearings"
+        },
+        {
+          "id": "depth-scale",
+          "title": "Scale drawings and comparing measures"
+        }
+      ]
+    },
+    {
+      "code": "R3",
+      "lessons": [
+        {
+          "id": "depth-ratio",
+          "title": "Linking ratios, fractions and changes to a total"
+        },
+        {
+          "id": "depth-operators",
+          "title": "Fractions and percentages as operators"
+        }
+      ]
+    },
+    {
+      "code": "R4",
+      "lessons": [
+        {
+          "id": "ra1",
+          "title": "Ratio"
+        },
+        {
+          "id": "depth-ratio",
+          "title": "Linking ratios, fractions and changes to a total"
+        }
+      ]
+    },
+    {
+      "code": "R5",
+      "lessons": [
+        {
+          "id": "ra1",
+          "title": "Ratio"
+        },
+        {
+          "id": "depth-ratio",
+          "title": "Linking ratios, fractions and changes to a total"
+        }
+      ]
+    },
+    {
+      "code": "R6",
+      "lessons": [
+        {
+          "id": "depth-ratio",
+          "title": "Linking ratios, fractions and changes to a total"
+        }
+      ]
+    },
+    {
+      "code": "R7",
+      "lessons": [
+        {
+          "id": "depth-ratio",
+          "title": "Linking ratios, fractions and changes to a total"
+        }
+      ]
+    },
+    {
+      "code": "R8",
+      "lessons": [
+        {
+          "id": "ra1",
+          "title": "Ratio"
+        },
+        {
+          "id": "st5",
+          "title": "Sampling"
+        }
+      ]
+    },
+    {
+      "code": "R9",
+      "lessons": [
+        {
+          "id": "nu4",
+          "title": "Fractions, decimals and percentages"
+        },
+        {
+          "id": "ra3",
+          "title": "Percentage change"
+        },
+        {
+          "id": "ra4",
+          "title": "Compound interest and depreciation"
+        },
+        {
+          "id": "depth-operators",
+          "title": "Fractions and percentages as operators"
+        }
+      ]
+    },
+    {
+      "code": "R10",
+      "lessons": [
+        {
+          "id": "ra2",
+          "title": "Best buys and proportion"
+        },
+        {
+          "id": "ra5",
+          "title": "Direct and inverse proportion"
+        },
+        {
+          "id": "depth-proportion",
+          "title": "Multi-step proportion and explaining a model"
+        }
+      ]
+    },
+    {
+      "code": "R11",
+      "lessons": [
+        {
+          "id": "ra6",
+          "title": "Compound measures"
+        }
+      ]
+    },
+    {
+      "code": "R12",
+      "lessons": [
+        {
+          "id": "depth-scale",
+          "title": "Scale drawings and comparing measures"
+        }
+      ]
+    },
+    {
+      "code": "R13",
+      "lessons": [
+        {
+          "id": "ra5",
+          "title": "Direct and inverse proportion"
+        },
+        {
+          "id": "depth-proportion",
+          "title": "Multi-step proportion and explaining a model"
+        }
+      ]
+    },
+    {
+      "code": "R14",
+      "lessons": [
+        {
+          "id": "al15",
+          "title": "Real-life and distance\u2013time graphs"
+        },
+        {
+          "id": "ra7",
+          "title": "Rates of change from graphs"
+        }
+      ]
+    },
+    {
+      "code": "R15",
+      "lessons": [
+        {
+          "id": "ra7",
+          "title": "Rates of change from graphs"
+        }
+      ]
+    },
+    {
+      "code": "R16",
+      "lessons": [
+        {
+          "id": "ra4",
+          "title": "Compound interest and depreciation"
+        }
+      ]
+    },
+    {
+      "code": "G1",
+      "lessons": [
+        {
+          "id": "ge14",
+          "title": "Properties of shapes"
+        }
+      ]
+    },
+    {
+      "code": "G2",
+      "lessons": [
+        {
+          "id": "ge8",
+          "title": "Constructions, loci and bearings"
+        }
+      ]
+    },
+    {
+      "code": "G3",
+      "lessons": [
+        {
+          "id": "ge1",
+          "title": "Angles and polygons"
+        },
+        {
+          "id": "ge10",
+          "title": "Circle theorems"
+        }
+      ]
+    },
+    {
+      "code": "G4",
+      "lessons": [
+        {
+          "id": "ge14",
+          "title": "Properties of shapes"
+        }
+      ]
+    },
+    {
+      "code": "G5",
+      "lessons": [
+        {
+          "id": "ge9",
+          "title": "Similarity and congruence"
+        },
+        {
+          "id": "depth-proof",
+          "title": "Geometrical proof with congruence and circle reasoning"
+        }
+      ]
+    },
+    {
+      "code": "G6",
+      "lessons": [
+        {
+          "id": "ge9",
+          "title": "Similarity and congruence"
+        },
+        {
+          "id": "depth-proof",
+          "title": "Geometrical proof with congruence and circle reasoning"
+        }
+      ]
+    },
+    {
+      "code": "G7",
+      "lessons": [
+        {
+          "id": "ge7",
+          "title": "Transformations"
+        }
+      ]
+    },
+    {
+      "code": "G8",
+      "lessons": [
+        {
+          "id": "ge7",
+          "title": "Transformations"
+        }
+      ]
+    },
+    {
+      "code": "G9",
+      "lessons": [
+        {
+          "id": "ge14",
+          "title": "Properties of shapes"
+        }
+      ]
+    },
+    {
+      "code": "G10",
+      "lessons": [
+        {
+          "id": "ge10",
+          "title": "Circle theorems"
+        },
+        {
+          "id": "depth-proof",
+          "title": "Geometrical proof with congruence and circle reasoning"
+        }
+      ]
+    },
+    {
+      "code": "G11",
+      "lessons": [
+        {
+          "id": "depth-coordinates",
+          "title": "Geometrical problems on coordinate axes"
+        }
+      ]
+    },
+    {
+      "code": "G12",
+      "lessons": [
+        {
+          "id": "ge16",
+          "title": "3D shapes, plans and elevations"
+        }
+      ]
+    },
+    {
+      "code": "G13",
+      "lessons": [
+        {
+          "id": "ge16",
+          "title": "3D shapes, plans and elevations"
+        }
+      ]
+    },
+    {
+      "code": "G14",
+      "lessons": [
+        {
+          "id": "ge15",
+          "title": "Units and measures"
+        }
+      ]
+    },
+    {
+      "code": "G15",
+      "lessons": [
+        {
+          "id": "ge8",
+          "title": "Constructions, loci and bearings"
+        }
+      ]
+    },
+    {
+      "code": "G16",
+      "lessons": [
+        {
+          "id": "ge2",
+          "title": "Area and circles"
+        },
+        {
+          "id": "ge3",
+          "title": "Volume and surface area"
+        }
+      ]
+    },
+    {
+      "code": "G17",
+      "lessons": [
+        {
+          "id": "ge2",
+          "title": "Area and circles"
+        },
+        {
+          "id": "ge3",
+          "title": "Volume and surface area"
+        },
+        {
+          "id": "depth-solid",
+          "title": "Composite solids, frustums and similarity"
+        }
+      ]
+    },
+    {
+      "code": "G18",
+      "lessons": [
+        {
+          "id": "ge2",
+          "title": "Area and circles"
+        }
+      ]
+    },
+    {
+      "code": "G19",
+      "lessons": [
+        {
+          "id": "ge9",
+          "title": "Similarity and congruence"
+        },
+        {
+          "id": "depth-solid",
+          "title": "Composite solids, frustums and similarity"
+        },
+        {
+          "id": "depth-scale",
+          "title": "Scale drawings and comparing measures"
+        }
+      ]
+    },
+    {
+      "code": "G20",
+      "lessons": [
+        {
+          "id": "ge4",
+          "title": "Pythagoras' theorem"
+        },
+        {
+          "id": "ge5",
+          "title": "Trigonometry"
+        },
+        {
+          "id": "depth-exact-trig",
+          "title": "Exact trigonometry and three-dimensional problems"
+        },
+        {
+          "id": "depth-coordinates",
+          "title": "Geometrical problems on coordinate axes"
+        }
+      ]
+    },
+    {
+      "code": "G21",
+      "lessons": [
+        {
+          "id": "ge5",
+          "title": "Trigonometry"
+        },
+        {
+          "id": "depth-exact-trig",
+          "title": "Exact trigonometry and three-dimensional problems"
+        }
+      ]
+    },
+    {
+      "code": "G22",
+      "lessons": [
+        {
+          "id": "ge6",
+          "title": "Sine and cosine rules"
+        },
+        {
+          "id": "depth-exact-trig",
+          "title": "Exact trigonometry and three-dimensional problems"
+        }
+      ]
+    },
+    {
+      "code": "G23",
+      "lessons": [
+        {
+          "id": "ge6",
+          "title": "Sine and cosine rules"
+        }
+      ]
+    },
+    {
+      "code": "G24",
+      "lessons": [
+        {
+          "id": "ge11",
+          "title": "Vectors"
+        },
+        {
+          "id": "depth-vector-proof",
+          "title": "Vector proofs, ratios and collinearity"
+        }
+      ]
+    },
+    {
+      "code": "G25",
+      "lessons": [
+        {
+          "id": "ge11",
+          "title": "Vectors"
+        },
+        {
+          "id": "depth-vector-proof",
+          "title": "Vector proofs, ratios and collinearity"
+        }
+      ]
+    },
+    {
+      "code": "P1",
+      "lessons": [
+        {
+          "id": "st8",
+          "title": "Tables and charts"
+        }
+      ]
+    },
+    {
+      "code": "P2",
+      "lessons": [
+        {
+          "id": "pr1",
+          "title": "Probability and relative frequency"
+        }
+      ]
+    },
+    {
+      "code": "P3",
+      "lessons": [
+        {
+          "id": "pr1",
+          "title": "Probability and relative frequency"
+        }
+      ]
+    },
+    {
+      "code": "P4",
+      "lessons": [
+        {
+          "id": "pr1",
+          "title": "Probability and relative frequency"
+        }
+      ]
+    },
+    {
+      "code": "P5",
+      "lessons": [
+        {
+          "id": "pr1",
+          "title": "Probability and relative frequency"
+        }
+      ]
+    },
+    {
+      "code": "P6",
+      "lessons": [
+        {
+          "id": "pr2",
+          "title": "Tree diagrams"
+        },
+        {
+          "id": "pr3",
+          "title": "Venn diagrams and sets"
+        },
+        {
+          "id": "depth-conditional",
+          "title": "Conditional probability and reversed conditions"
+        }
+      ]
+    },
+    {
+      "code": "P7",
+      "lessons": [
+        {
+          "id": "pr4",
+          "title": "Listing and counting outcomes"
+        }
+      ]
+    },
+    {
+      "code": "P8",
+      "lessons": [
+        {
+          "id": "pr2",
+          "title": "Tree diagrams"
+        },
+        {
+          "id": "depth-conditional",
+          "title": "Conditional probability and reversed conditions"
+        }
+      ]
+    },
+    {
+      "code": "P9",
+      "lessons": [
+        {
+          "id": "pr2",
+          "title": "Tree diagrams"
+        },
+        {
+          "id": "pr3",
+          "title": "Venn diagrams and sets"
+        },
+        {
+          "id": "depth-conditional",
+          "title": "Conditional probability and reversed conditions"
+        }
+      ]
+    },
+    {
+      "code": "S1",
+      "lessons": [
+        {
+          "id": "st5",
+          "title": "Sampling"
+        }
+      ]
+    },
+    {
+      "code": "S2",
+      "lessons": [
+        {
+          "id": "st2",
+          "title": "Charts and scatter graphs"
+        },
+        {
+          "id": "st8",
+          "title": "Tables and charts"
+        }
+      ]
+    },
+    {
+      "code": "S3",
+      "lessons": [
+        {
+          "id": "st2",
+          "title": "Charts and scatter graphs"
+        },
+        {
+          "id": "st3",
+          "title": "Cumulative frequency and box plots"
+        },
+        {
+          "id": "st4",
+          "title": "Histograms"
+        },
+        {
+          "id": "st8",
+          "title": "Tables and charts"
+        }
+      ]
+    },
+    {
+      "code": "S4",
+      "lessons": [
+        {
+          "id": "st1",
+          "title": "Averages and range"
+        },
+        {
+          "id": "st3",
+          "title": "Cumulative frequency and box plots"
+        },
+        {
+          "id": "st4",
+          "title": "Histograms"
+        },
+        {
+          "id": "depth-data",
+          "title": "Comparing distributions and interpreting spread"
+        }
+      ]
+    },
+    {
+      "code": "S5",
+      "lessons": [
+        {
+          "id": "depth-data",
+          "title": "Comparing distributions and interpreting spread"
+        }
+      ]
+    },
+    {
+      "code": "S6",
+      "lessons": [
+        {
+          "id": "st2",
+          "title": "Charts and scatter graphs"
+        }
+      ]
+    }
+  ]
+}

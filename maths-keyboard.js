@@ -9,6 +9,7 @@
  const labels={square:'Square',cube:'Cube',root:'Square root',fraction:'Fraction',power:'Power',baseline:'Return to baseline',standard:'Standard form',left:'Move left',right:'Move right',backspace:'Delete previous character',newline:'New line',close:'Done'};
  const grid=panel.querySelector('.mk-grid');for(const [label,key]of keys){const b=document.createElement('button');b.type='button';b.className='btn';b.textContent=label;b.dataset.mk=key;b.setAttribute('aria-label',labels[key]||label);if(key==='power')b.setAttribute('aria-pressed','false');grid.append(b);}
  const scientific=document.createElement('div');scientific.className='mk-scientific';for(const name of ['sin','cos','tan','asin','acos','atan','ln','log','exp','abs','e']){const b=document.createElement('button');b.type='button';b.className='btn';b.dataset.mk='fn:'+name;b.textContent=name;b.setAttribute('aria-label',name==='e'?'Euler number':name+' function');scientific.append(b);}panel.insertBefore(scientific,panel.querySelector('.mk-status'));
+ const letters=document.createElement('details');letters.className='mk-letters';const summary=document.createElement('summary');summary.textContent='Letters and mathematical symbols';letters.append(summary);const symbols=document.createElement('div');symbols.className='mk-scientific';for(const ch of [...'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ','θ','α','β','γ','λ','μ','σ','ω','π','∞','±','≤','≥','≠','∈','∩','∪','∑','∫','°','!']){const b=document.createElement('button');b.type='button';b.className='btn';b.textContent=ch;b.dataset.mk='literal:'+ch;b.setAttribute('aria-label','Insert '+ch);symbols.append(b);}letters.append(symbols);panel.insertBefore(letters,panel.querySelector('.mk-status'));
  document.body.append(panel);
  function remember(){if(field&&field.selectionStart!==null){start=field.selectionStart;end=field.selectionEnd;}}
  function preview(){if(!field)return;panel.querySelector('.mk-preview').textContent=field.value||'Your expression appears here';panel.querySelector('.mk-status').textContent=power?'Power mode: keys enter a superscript. Choose Baseline when finished.':'Editing '+(field.getAttribute('aria-label')||'your answer')+'. Normal typing also works.';panel.querySelector('[data-mk="power"]').setAttribute('aria-pressed',String(power));}
@@ -25,6 +26,7 @@
   if(key==='root'){power=false;replace('√('+selected+')',selected?selected.length+3:2);return;}
   if(key.startsWith('fn:')){power=false;const f=key.slice(3);replace(f==='e'?'e':f+'('+selected+')',f==='e'?1:f.length+1+selected.length);return;}
   if(key==='newline'){if(field.tagName==='TEXTAREA')replace('\n');return;}
+  if(key.startsWith('literal:'))key=key.slice(8);
   if(power){const mapped=sup[key==='−'?'-':key==='÷'?'/':key];if(!mapped){panel.querySelector('.mk-status').textContent='Choose Baseline before entering this symbol.';return;}replace(mapped);}else replace(key);
  }
  // Keeping pointer focus in the answer preserves its selection on touch screens.

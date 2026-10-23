@@ -1062,7 +1062,7 @@ function reveal(qid){ const [id,i]=qid.split(/-(?=\d+$)/), q=QZ[id][+i], fb=$(`#
 const hid=q=>!!(window.TIER_HID&&window.TIER_HID(document.querySelector(`[data-q="${q}"]`)));
 function score(id){ const V=QZ[id].map((_,i)=>`${id}-${i}`).filter(q=>!hid(q)), n=V.length, ok=V.filter(q=>STATE[q]==="ok").length; $(`#${id}-score`).textContent=`${ok} / ${n} correct`;
   const sec=$(`#${id}`).closest("section.lab"); if(!sec) return; const all=$$(`#${sec.id} .lcard[id^="qz"]`).every(c=>QZ[c.id].every((_,i)=>STATE[`${c.id}-${i}`]==="ok"||hid(`${c.id}-${i}`)));
-  if(all){ const lid=sec.id.slice(4); done.add(lid); store.set(DONEKEY,[...done]); mark(); } }
+  const lid=sec.id.slice(4); if(all){ done.add(lid); }else{ done.delete(lid); const tab=document.getElementById("tab-"+lid); if(tab)tab.classList.remove("done"); } store.set(DONEKEY,[...done]); mark(); }
 function mark(){ if(!restored) restore(); done.forEach(id=>{ const t=$("#tab-"+id); if(t) t.classList.add("done"); }); }
 
 document.addEventListener("click",e=>{ const t=e.target.closest("[data-chk],[data-show],[data-exnext],[data-exall]"); if(!t) return;
@@ -6417,6 +6417,8 @@ MP.paper({id:"ph9",num:18,n:3,set:3,tier:"Higher",calc:true,qs});
 })();
 
 </script>
+<script src="gcse-depth-data.js?v=20261023"></script>
+<script src="gcse-depth.js?v=20261023"></script>
 <script>
 LEARN.unit=null;
 Object.assign(LAB.ICONS,{
@@ -6448,6 +6450,7 @@ LEARN.mark(); M.restore();
 })();
 
 </script>
+<script src="topic-search.js?v=20261023-depth"></script>
 <script>
 /* Activity tracking (this device only) and the optional student progress report (PDF) */
 (()=>{
@@ -6662,6 +6665,7 @@ function apply(t,user){ window.TIER=t; root.dataset.tier=t; try{ localStorage.se
   if(p&&window.LAB_HIDE(p)){ const u=(window.HUB_UNITS||[]).find(u=>u.groups.some(([g])=>g===p.group)); location.hash=u?"u-"+u.key:""; }
   else LAB.reroute();
   const note=document.getElementById("tier-note"); if(note) note.textContent=t==="f"?"Showing Foundation content only. Higher-only lessons, examples and questions are hidden.":"Showing all content. Higher-only material is marked Higher.";
+  window.dispatchEvent(new Event("prodigy-tier-change"));
   if(user&&window.matchMedia) btn.querySelector(".on").focus(); }
 btn.addEventListener("click",e=>{ const b=e.target.closest("[data-tier]"); if(b) apply(b.dataset.tier,true); });
 /* exam cards redraw themselves after marking: keep numbering and Higher marks in step */
@@ -6749,7 +6753,7 @@ if(!CFG.url||!CFG.key||/PASTE|YOUR/i.test(CFG.url+CFG.key)||!window.supabase) re
 const {$,$$,store}=LAB;
 const sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"alp-auth"}});
 const DOMAIN=CFG.emailDomain||"accounts.physicsalevel.prodigyai.uk";
-const SITES={"alevel-physics":["A Level Physics","physicsalevel.prodigyai.uk"],"gcse-physics":["GCSE Physics","physicsgcse.prodigyai.uk"],"gcse-maths":["GCSE Maths","mathsgcse.prodigyai.uk"],"gcse-chemistry":["GCSE Chemistry","chemistrygcse.prodigyai.uk"],"alevel-chemistry":["A Level Chemistry","chemistryalevel.prodigyai.uk"],"alevel-maths":["A Level Maths","mathsalevel.prodigyai.uk"],"gcse-biology":["GCSE Biology","biologygcse.prodigyai.uk"],"alevel-biology":["A Level Biology","biologyalevel.prodigyai.uk"],"gcse-combined":["Combined Science","combinedsciencegcse.prodigyai.uk"],"alevel-psychology":["A Level Psychology","psychologyalevel.prodigyai.uk"],"alevel-sociology":["A Level Sociology","sociologyalevel.prodigyai.uk"]};
+const SITES={"alevel-physics":["A Level Physics","physicsalevel.prodigyai.uk"],"gcse-physics":["GCSE Physics","physicsgcse.prodigyai.uk"],"gcse-maths":["GCSE Maths","mathsgcse.prodigyai.uk"],"gcse-chemistry":["GCSE Chemistry","chemistrygcse.prodigyai.uk"],"alevel-chemistry":["A Level Chemistry","chemistryalevel.prodigyai.uk"],"alevel-maths":["A Level Maths","mathsalevel.prodigyai.uk"],"alevel-further-maths":["A Level Further Maths","prodigyai-app.github.io/ALevelFurtherMaths/"],"gcse-biology":["GCSE Biology","biologygcse.prodigyai.uk"],"alevel-biology":["A Level Biology","biologyalevel.prodigyai.uk"],"gcse-combined":["Combined Science","combinedsciencegcse.prodigyai.uk"],"alevel-psychology":["A Level Psychology","psychologyalevel.prodigyai.uk"],"alevel-sociology":["A Level Sociology","sociologyalevel.prodigyai.uk"]};
 const SITE=window.ALP_SITE&&SITES[window.ALP_SITE]?window.ALP_SITE:"alevel-physics", SITENAME=SITES[SITE][0];
 const isSync=k=>/^learn-/.test(k)||/^maths-/.test(k)||/^pl-.*-runs$/.test(k)||k==="alp-activity";
 const SPECIAL=new Set(["learn-motion-done","learn-check-state","learn-motion-exam","alp-activity"]);
@@ -6929,6 +6933,6 @@ window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; },get profile(){ re
 
 <script src="maths-keyboard.js?v=20261022-keyboard"></script>
 <script src="course-links.js"></script>
-<script src="assessment-core.js"></script>
+<script src="assessment-core.js?v=20261023-courses"></script>
 <script src="assignments.js"></script>
 </body></html>
