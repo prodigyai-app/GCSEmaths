@@ -1,0 +1,78 @@
+/* Shared, original SVG illustrations. Only decorative navigation icons are replaced. */
+(function(root){'use strict';
+ const art={
+ brain:'<path d="M12 5C10 1 4 3 5 7 1 8 2 14 5 15c-1 5 5 8 7 4 2 4 8 1 7-4 3-1 4-7 0-8 1-4-5-6-7-2Z"/><path d="M12 5v14M5 7c3-1 5 1 5 3M4 12c2-1 4 0 4 2M6 18c0-2 2-3 4-3M19 7c-3-1-5 1-5 3M20 12c-2-1-4 0-4 2M18 18c0-2-2-3-4-3"/><circle cx="8" cy="10" r=".7" fill="currentColor"/><circle cx="16" cy="10" r=".7" fill="currentColor"/>',
+ people:'<circle cx="12" cy="6" r="2.6"/><circle cx="4.5" cy="10" r="2"/><circle cx="19.5" cy="10" r="2"/><path d="M7.5 15v-1a4.5 4.5 0 0 1 9 0v1M1.5 18v-2a3 3 0 0 1 4-2.8M22.5 18v-2a3 3 0 0 0-4-2.8M8 19h8M12 16v6M6 20l-2 2M18 20l2 2"/>',
+ atom:'<circle cx="12" cy="12" r="2.2" fill="currentColor" fill-opacity=".18"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/><circle cx="21" cy="10" r="1.2" fill="currentColor"/><circle cx="7" cy="4.5" r="1.2" fill="currentColor"/>',
+ flask:'<path d="M8 2h8M9 2v7l-5 9a2.4 2.4 0 0 0 2 3h12a2.4 2.4 0 0 0 2-3l-5-9V2M7 14h10M7 17h3M14 18h2"/><path d="M7 14h10l3 5-2 2H6l-2-2Z" fill="currentColor" fill-opacity=".12"/><circle cx="11" cy="12" r=".7"/><circle cx="13" cy="16.5" r=".8"/><path d="M11 5h2"/>',
+ dna:'<path d="M6 2c0 8 12 12 12 20M18 2C18 10 6 14 6 22M7 5h10M9 8h6M9 16h6M7 19h10M7 12h10"/><circle cx="6" cy="2" r="1" fill="currentColor"/><circle cx="18" cy="22" r="1" fill="currentColor"/>',
+ graph:'<path d="M3 2v19h19M3 7h2M3 12h2M3 17h2M8 19v2M13 19v2M18 19v2"/><path d="M5 17C8 4 12 4 15 13s4 4 6-6"/><circle cx="10" cy="7" r="1.4" fill="currentColor" fill-opacity=".25"/>',
+ complex:'<path d="M3 3v18h18M3 21l13-14M12 7h4v4M16 7v14"/><path d="M8 21a5 5 0 0 0-1.5-3.5"/><circle cx="16" cy="7" r="1.8" fill="currentColor" fill-opacity=".2"/><path d="M19 4h3M20.5 2.5v3M19 18h3"/>',
+ athlete:'<circle cx="14.5" cy="3.6" r="2.1"/><path d="m6 9 5-3 5 4 5 1M11 6l-1.5 7 5.5 3-2 6M9.5 13 5 18H1.5M3 7h3M1 11h4M18 19h4M18 22h3"/><path d="m11 7 4 3-2 4-3.5-1Z" fill="currentColor" fill-opacity=".14"/>',
+ microscope:'<path d="m11 2 4 3-5 7-4-3ZM9 11l-2 3M13 7a7 7 0 0 1 3 12M4 16h10M6 19h13M11 19v3M5 22h14"/><circle cx="16" cy="10" r="1.8" fill="currentColor" fill-opacity=".15"/><path d="M3 14h3M8 3l2-2"/>',
+ heart:'<path d="M12 21C7 18 2 14 2 8a5 5 0 0 1 10-1A5 5 0 0 1 22 8c0 6-5 10-10 13Z" fill="currentColor" fill-opacity=".1"/><path d="M3 12h4l2-4 3 8 2-5h7M9 2v3M15 2v3"/>',
+ lungs:'<path d="M12 2v9M12 8 8 12M12 8l4 4M8 7C4 8 1 14 2 19c.5 3 6 2 7-1V9M16 7c4 1 7 7 6 12-.5 3-6 2-7-1V9M5 13l3 2M19 13l-3 2M5 17h3M19 17h-3"/>',
+ cell:'<path d="M20 5c4 4 2 13-4 16S1 17 2 11 15 0 20 5Z" fill="currentColor" fill-opacity=".08"/><ellipse cx="12" cy="11" rx="4" ry="3"/><circle cx="12" cy="11" r="1"/><path d="M5 8c3-2 4 1 1 2M16 15c4-2 4 2 1 3M5 15h2M17 7h2M10 18h2"/>',
+ leaf:'<path d="M20 3C9 1 1 8 5 17c8 5 17-3 15-14Z" fill="currentColor" fill-opacity=".12"/><path d="M3 22 17 7M7 18v-6M11 14V8M11 14h6M7 18h6"/>',
+ microbe:'<circle cx="12" cy="12" r="7" fill="currentColor" fill-opacity=".1"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4 4l3 3M17 17l3 3M20 4l-3 3M7 17l-3 3"/><circle cx="10" cy="10" r="1"/><circle cx="15" cy="12" r="1.2"/><path d="M9 15h3"/>',
+ circuit:'<path d="M4 9V4h16v16H4v-5M2 9h4M1 15h6M11 2v4M15 3v2M9 20h6"/><rect x="9" y="17" width="6" height="6" rx="1"/><circle cx="20" cy="12" r="3" fill="var(--panel)"/><path d="m18 10 4 4M22 10l-4 4"/>',
+ wave:'<path d="M2 12c2-8 4-8 6 0s4 8 6 0 4-8 8 0M2 21h20M3 19v3M11 19v3M19 19v3"/><path d="M11 3v17" stroke-dasharray="2 2"/><circle cx="11" cy="12" r="1" fill="currentColor"/>',
+ forces:'<rect x="8" y="8" width="8" height="8" rx="1.5" fill="currentColor" fill-opacity=".12"/><path d="M12 8V1m-3 3 3-3 3 3M16 12h7m-3-3 3 3-3 3M12 16v7m-3-3 3 3 3-3M8 12H1m3-3-3 3 3 3"/>',
+ battery:'<rect x="2" y="6" width="18" height="13" rx="2"/><path d="M20 10h2v5h-2M5 9h3v7H5M11 9v7M15 9v7"/><path d="M7 2h8"/>',
+ heat:'<path d="M9 14V4a3 3 0 0 1 6 0v10a5 5 0 1 1-6 0Z"/><path d="M12 6v11M17 4h3M17 8h2M17 12h3"/><circle cx="12" cy="18" r="2" fill="currentColor"/>',
+ magnet:'<path d="M4 3v10a8 8 0 0 0 16 0V3h-5v10a3 3 0 0 1-6 0V3ZM4 8h5M15 8h5"/><path d="M1 6v8M23 6v8M7 21l-2 2M17 21l2 2" stroke-dasharray="1 2"/>',
+ orbit:'<circle cx="12" cy="12" r="4" fill="currentColor" fill-opacity=".15"/><ellipse cx="12" cy="12" rx="11" ry="4" transform="rotate(-25 12 12)"/><circle cx="21" cy="8" r="1.5" fill="currentColor"/><path d="M5 3v3M3.5 4.5h3M18 18v3M16.5 19.5h3"/>',
+ particles:'<rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="7" cy="7" r="2"/><circle cx="16" cy="7" r="2"/><circle cx="11" cy="15" r="2"/><circle cx="18" cy="17" r="1.5"/><path d="M7 10v3M14 10l-1 2M4 16h3"/>',
+ molecule:'<path d="m7 5 10 2 2 10-10 3-5-8ZM7 5l-3 7M9 20l-1-7M8 13l9-6M8 13l11 4"/><circle cx="7" cy="5" r="2.3" fill="var(--panel)"/><circle cx="17" cy="7" r="2.3" fill="var(--panel)"/><circle cx="19" cy="17" r="2.3" fill="var(--panel)"/><circle cx="9" cy="20" r="2.3" fill="var(--panel)"/><circle cx="4" cy="12" r="2" fill="var(--panel)"/>',
+ organic:'<path d="m12 2 8.5 5v10L12 22l-8.5-5V7ZM12 5l5.5 3.3M17.5 15.5 12 19M6.5 15.5V9M20.5 7 23 5M3.5 17 1 19"/>',
+ balance:'<path d="M12 3v18M6 21h12M3 7h18M5 7l-4 8h8ZM19 7l-4 8h8Z"/><circle cx="12" cy="5" r="2" fill="var(--panel)"/><path d="M2 17h6M16 17h6"/>',
+ rates:'<path d="M3 3v18h19M5 18c2-11 8-12 16-12"/><path d="m13 10 4-1-1 4M7 19l11-16" stroke-dasharray="2 2"/><circle cx="15" cy="9" r="1.3" fill="currentColor"/>',
+ ruler:'<path d="m3 17 14-14 4 4L7 21ZM14 6l3 3M11 9l2 2M8 12l3 3M5 15l2 2"/><path d="M2 3h6M5 1v4M16 19h6M19 17v4"/>',
+ number:'<rect x="3" y="2" width="18" height="20" rx="2"/><path d="M6 5h12v4H6ZM6 13h2M11 13h2M16 13h2M6 17h2M11 17h2M16 17h2M7 12v2M12 16v2"/>',
+ algebra:'<path d="m3 7 7 10M10 7 3 17M14 10h8M14 15h8M15 3c1-2 5-1 3 1l-3 3h5"/><path d="M2 21h20" opacity=".3"/>',
+ geometry:'<path d="M3 21 10 3l11 18ZM7 21v-4h4v4M10 3v18"/><path d="M11 8a5 5 0 0 1 3 2M4 11l-2 6M19 11l3 5"/>',
+ calculus:'<path d="M16 3c-8-4-3 21-11 18M3 13h8M17 9l5 10M22 9l-5 10"/><path d="M18 3h4M20 1v4"/>',
+ statistics:'<path d="M3 2v20h19"/><rect x="6" y="13" width="3" height="7" fill="currentColor" fill-opacity=".15"/><rect x="12" y="8" width="3" height="12" fill="currentColor" fill-opacity=".15"/><rect x="18" y="4" width="3" height="16" fill="currentColor" fill-opacity=".15"/><path d="m6 9 7-5 7-2" stroke-dasharray="1 2"/>',
+ probability:'<rect x="2" y="3" width="16" height="16" rx="3"/><circle cx="6" cy="7" r=".9" fill="currentColor"/><circle cx="14" cy="7" r=".9" fill="currentColor"/><circle cx="10" cy="11" r=".9" fill="currentColor"/><circle cx="6" cy="15" r=".9" fill="currentColor"/><circle cx="14" cy="15" r=".9" fill="currentColor"/><path d="M21 6v15H6"/>',
+ network:'<path d="m4 5 8 6 8-6M4 5v14l8-8 8 8V5M4 19h16"/><g fill="var(--panel)"><circle cx="4" cy="5" r="2.5"/><circle cx="20" cy="5" r="2.5"/><circle cx="12" cy="11" r="2.5"/><circle cx="4" cy="19" r="2.5"/><circle cx="20" cy="19" r="2.5"/></g>',
+ matrix:'<path d="M5 3H2v18h3M19 3h3v18h-3M7 7h3M8.5 5.5v3M14 7h3M7 17h3M14 17h3M15.5 15.5v3"/><path d="M6 12h12" opacity=".25"/>',
+ paper:'<path d="M5 2h10l5 5v15H5ZM15 2v6h5M8 11h9M8 15h9M8 19h5"/><path d="m1.5 8 2 2 3-4"/>',
+ research:'<rect x="4" y="3" width="15" height="19" rx="2"/><path d="M8 3V1h7v2M7 8h5M7 12h3M7 16h3"/><circle cx="16" cy="14" r="4" fill="var(--panel)"/><path d="m19 17 3 3M14 14h4M16 12v4"/>',
+ writing:'<path d="M3 3h10M3 7h8M3 11h6M3 21h18M11 17l1-5L20 4l3 3-8 8ZM18 6l3 3M11 17l4-2"/><path d="M3 16h4"/>',
+ memory:'<path d="M12 4C8 0 2 5 5 9c-3 3-1 8 3 8v5h8v-5c4-2 6-6 4-10-1-3-5-5-8-3Z"/><circle cx="12" cy="10" r="4"/><path d="M12 7v3l2 1M9 19h7"/>',
+ muscle:'<path d="M4 20c-1-6 1-12 5-14l2 3-2 4c3-2 6-1 7 1l2-9 4 1-1 11c-3 5-12 6-17 3Z" fill="currentColor" fill-opacity=".1"/><path d="M9 13c-1 2 0 4 2 4M13 13l3 1M18 5l1-3 3 1v3"/>',
+ trophy:'<path d="M7 3h10v6a5 5 0 0 1-10 0ZM7 5H2v3a5 5 0 0 0 5 5M17 5h5v3a5 5 0 0 1-5 5M12 14v5M7 22v-3h10v3Z"/><path d="m12 5 1 2 2 .3-1.5 1.5.3 2.2-1.8-1-1.8 1 .3-2.2L9 7.3l2-.3Z" fill="currentColor" fill-opacity=".15"/>',
+ target:'<circle cx="11" cy="13" r="9"/><circle cx="11" cy="13" r="5"/><circle cx="11" cy="13" r="1" fill="currentColor"/><path d="m11 13 9-9M18 2v4h4"/>',
+ bone:'<path d="M8 3a3 3 0 0 1 5-1c1 1 1 3 0 4l5 9c3-1 6 3 3 5-1 3-5 2-6 0L9 9C6 10 3 7 5 5c0-2 2-3 3-2Z"/><path d="m10 9 5 8" opacity=".4"/>',
+ nutrition:'<path d="M12 7c-8-5-13 5-8 12 3 4 5 2 8 2s5 2 8-2c5-7 0-17-8-12ZM12 7V2M12 4c2-4 6-3 7-2-1 3-4 4-7 2"/><path d="M6 11c-2 1-2 4-1 5"/>',
+ stopwatch:'<circle cx="12" cy="14" r="8"/><path d="M9 2h6M12 2v4M18 7l3-3M12 9v5l3 2M5 6 3 4"/><circle cx="12" cy="14" r="1" fill="currentColor"/>'
+ };
+ const subjects={'alevel-physics':'atom','gcse-physics':'atom','alevel-chemistry':'flask','gcse-chemistry':'flask','alevel-biology':'dna','gcse-biology':'dna','gcse-combined':'microscope','alevel-maths':'graph','gcse-maths':'graph','alevel-further-maths':'complex','alevel-psychology':'brain','alevel-sociology':'people','alevel-pe':'athlete'};
+ function choose(site,text=''){
+  const t=text.toLowerCase();if(/paper|assessment|mixed exam/.test(t))return'paper';if(/essay|writing|argument/.test(t))return'writing';
+  if(/research|methodolog|sampling|practical skills|specification coverage/.test(t))return'research';
+  if(/psychology/.test(site)){if(/memory|forget|working memory/.test(t))return'memory';if(/social|relationship|attachment|gender|aggress|obedience/.test(t))return'people';return'brain';}
+  if(/sociology/.test(site)){if(/research|method/.test(t))return'research';if(/theory|debate/.test(t))return'network';return'people';}
+  if(site==='alevel-pe'){
+   if(/cardiac|heart|blood|vascular|oxygen transport/.test(t))return'heart';if(/lung|ventilat|respir|gas exchange/.test(t))return'lungs';if(/muscl|fibre|motor unit|contraction/.test(t))return'muscle';if(/joint|injur|rehabilit|anatomy/.test(t))return'bone';if(/psycholog|anxiety|arousal|personality|stress|attribution|confidence/.test(t))return'brain';if(/nutrition|diet|supplement|hydration/.test(t))return'nutrition';if(/group|society|social|leader|participation/.test(t))return'people';if(/training|periodisation|recovery|response time/.test(t))return'stopwatch';if(/goal|skill|learning|guidance|feedback/.test(t))return'target';if(/biomech|lever|motion|force|stability/.test(t))return'forces';if(/energy|atp|glycol/.test(t))return'battery';if(/practical|performance analysis|improvement/.test(t))return'research';return'athlete';
+  }
+  if(/maths/.test(site)){
+   if(/matrix|matrices/.test(t))return'matrix';if(/complex|argand/.test(t))return'complex';if(/decision|network|algorithm|route|flow|linear programming/.test(t))return'network';if(/probab|binomial|distribut|random/.test(t))return'probability';if(/statistic|data|sampling|regression|hypothesis/.test(t))return'statistics';if(/differentiat|integrat|calculus|differential/.test(t))return'calculus';if(/mechanic|force|motion|vector|momentum/.test(t))return'forces';if(/geometr|trigon|triangle|circle|angle|shape|area|volume|coordinate/.test(t))return'geometry';if(/graph|function|sequence/.test(t))return'graph';if(/algebra|equation|inequal|proof|polynomial/.test(t))return'algebra';if(/number|fraction|percent|ratio|proportion|decimal|power|root|round/.test(t))return'number';return subjects[site]||'graph';
+  }
+  if(/biology/.test(site)||site==='gcse-combined'){
+   if(/genetic|inherit|dna|variation|evolution/.test(t))return'dna';if(/cell|organisation|enzyme|photosynth|bioenergetic/.test(t))return'cell';if(/ecolog|ecosystem|plant|biodivers|sustain|food chain/.test(t))return'leaf';if(/infection|disease|immun|pathogen|microorgan/.test(t))return'microbe';if(/heart|circulat|transport in animal/.test(t))return'heart';if(/lung|respirat|gas exchange/.test(t))return'lungs';if(/homeostas|response|nervous|coordination/.test(t))return'brain';if(site!=='gcse-combined')return'dna';
+  }
+  if(/organic|carbon|alkane|alkene|alcohol|aromatic/.test(t))return'organic';if(/rate|kinetic|equilibr/.test(t))return'rates';if(/quantitative|amount of|mole |titration/.test(t))return'balance';if(/bond|structure|periodic|chemical|reaction/.test(t))return'molecule';
+  if(/measure|uncertain|precision/.test(t))return'ruler';if(/electric|circuit|capacitor|potential/.test(t))return'circuit';if(/magnet|induct|motor|transformer/.test(t))return'magnet';if(/wave|light|optic|sound|quantum/.test(t))return'wave';if(/space|orbit|astro|star/.test(t))return'orbit';if(/atomic|nuclear|radioactiv|particle physics/.test(t))return'atom';if(/particle|gas|matter/.test(t))return'particles';if(/thermal|heat|temperature/.test(t))return'heat';if(/force|motion|moment|mechanic|projectile/.test(t))return'forces';if(/energy|power|work/.test(t))return'battery';return subjects[site]||'research';
+ }
+ function svg(name){return art[name]||art.research;}
+ function mount(){if(typeof document==='undefined'||!root.LAB)return;const site=root.ALP_SITE,brand=subjects[site]||'research';
+  const logo=document.querySelector('header.top .brand>svg');if(logo){logo.setAttribute('viewBox','0 0 24 24');logo.setAttribute('data-subject-icon',brand);logo.setAttribute('aria-hidden','true');logo.innerHTML='<rect x=".5" y=".5" width="23" height="23" rx="5" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width=".5"/><g transform="translate(3 3) scale(.75)" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+svg(brand)+'</g>';}
+  const favicon=document.querySelector('link[rel="icon"]')||document.head.appendChild(document.createElement('link'));favicon.rel='icon';favicon.type='image/svg+xml';favicon.href='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#17846e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">'+svg(brand).replace(/var\(--panel\)/g,'white')+'</svg>');
+  function assign(){for(const u of root.HUB_UNITS||[]){const name=choose(site,u.title+' '+u.key),key='subject-unit-'+u.key;root.LAB.ICONS[key]=svg(name);u.icon=key;}for(const p of root.LAB.list){const name=choose(site,p.name),key='subject-page-'+p.id;root.LAB.ICONS[key]=svg(name);p.icon=key;}
+   for(const b of document.querySelectorAll('button.unit[data-go],button.prac[data-id]')){const icon=b.querySelector('.u-ico svg,.ico svg');if(!icon)continue;const p=b.dataset.id?root.LAB.list.find(p=>p.id===b.dataset.id):(root.HUB_UNITS||[]).find(u=>'u-'+u.key===b.dataset.go),name=choose(site,p?.title||p?.name||'');if(icon.dataset.subjectIcon===name)continue;icon.dataset.subjectIcon=name;icon.setAttribute('aria-hidden','true');icon.setAttribute('focusable','false');icon.setAttribute('stroke-width','1.45');icon.setAttribute('stroke-linecap','round');icon.innerHTML=svg(name);}
+  }assign();let queued=false;new MutationObserver(()=>{if(queued)return;queued=true;queueMicrotask(()=>{queued=false;assign();});}).observe(document.querySelector('body>.wrap')||document.body,{childList:true,subtree:true});
+  const style=document.createElement('style');style.textContent='.u-ico svg{width:36px;height:36px}.prac .ico svg{width:26px;height:26px}.u-ico{min-height:44px}header.top .brand>svg{flex-shrink:0}';document.head.append(style);
+ }
+ const api={art,subjects,choose,svg,mount};root.ProdigyIcons=api;if(typeof module==='object'&&module.exports)module.exports=api;if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();}
+})(typeof window==='undefined'?globalThis:window);

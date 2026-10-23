@@ -4,7 +4,7 @@
 const SITES = {
  'alevel-physics':['A Level Physics','ALevelPhysics'], 'alevel-chemistry':['A Level Chemistry','ALevelChemistry'],
  'alevel-biology':['A Level Biology','ALevelBiology'], 'alevel-maths':['A Level Maths','ALevelMaths'], 'alevel-further-maths':['A Level Further Maths','ALevelFurtherMaths'],
- 'alevel-psychology':['A Level Psychology','ALevelPsychology'], 'alevel-sociology':['A Level Sociology','ALevelSociology'], 'gcse-physics':['GCSE Physics','GCSEPhysics'],
+ 'alevel-psychology':['A Level Psychology','ALevelPsychology'], 'alevel-sociology':['A Level Sociology','ALevelSociology'], 'alevel-pe':['A Level PE','ALevelPE'], 'gcse-physics':['GCSE Physics','GCSEPhysics'],
  'gcse-chemistry':['GCSE Chemistry','GCSEChemistry'], 'gcse-biology':['GCSE Biology','GCSEBiology'],
  'gcse-maths':['GCSE Maths','GCSEmaths'], 'gcse-combined':['Combined Science','GCSECombinedScience']
 };
