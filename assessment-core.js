@@ -6,6 +6,7 @@ const SITES = {
  'alevel-biology':['A Level Biology','ALevelBiology'], 'alevel-maths':['A Level Maths','ALevelMaths'], 'alevel-further-maths':['A Level Further Maths','ALevelFurtherMaths'],
  'alevel-psychology':['A Level Psychology','ALevelPsychology'], 'alevel-sociology':['A Level Sociology','ALevelSociology'], 'alevel-pe':['A Level PE','ALevelPE'], 'gcse-physics':['GCSE Physics','GCSEPhysics'],
  'gcse-chemistry':['GCSE Chemistry','GCSEChemistry'], 'gcse-biology':['GCSE Biology','GCSEBiology'],
+ 'ks3-science':['KS3 Science','KS3Science'], 'ks3-maths':['KS3 Maths','KS3Maths'],
  'gcse-maths':['GCSE Maths','GCSEmaths'], 'gcse-combined':['Combined Science','GCSECombinedScience']
 };
 const clone = x => JSON.parse(JSON.stringify(x));

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <meta charset="utf-8">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261023-pe">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261023-ks3">
 <link rel="stylesheet" href="maths-keyboard.css?v=20261022-keyboard">
 <script src="math-notation.js?v=20261022-keyboard"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -6754,7 +6754,7 @@ if(!CFG.url||!CFG.key||/PASTE|YOUR/i.test(CFG.url+CFG.key)||!window.supabase) re
 const {$,$$,store}=LAB;
 const sb=window.supabase.createClient(CFG.url,CFG.key,{auth:{persistSession:true,autoRefreshToken:true,storageKey:"alp-auth"}});
 const DOMAIN=CFG.emailDomain||"accounts.physicsalevel.prodigyai.uk";
-const SITES={"alevel-physics":["A Level Physics","physicsalevel.prodigyai.uk"],"gcse-physics":["GCSE Physics","physicsgcse.prodigyai.uk"],"gcse-maths":["GCSE Maths","mathsgcse.prodigyai.uk"],"gcse-chemistry":["GCSE Chemistry","chemistrygcse.prodigyai.uk"],"alevel-chemistry":["A Level Chemistry","chemistryalevel.prodigyai.uk"],"alevel-maths":["A Level Maths","mathsalevel.prodigyai.uk"],"alevel-further-maths":["A Level Further Maths","prodigyai-app.github.io/ALevelFurtherMaths/"],"gcse-biology":["GCSE Biology","biologygcse.prodigyai.uk"],"alevel-biology":["A Level Biology","biologyalevel.prodigyai.uk"],"gcse-combined":["Combined Science","combinedsciencegcse.prodigyai.uk"],"alevel-psychology":["A Level Psychology","psychologyalevel.prodigyai.uk"],"alevel-sociology":["A Level Sociology","sociologyalevel.prodigyai.uk"],"alevel-pe":["A Level PE","prodigyai-app.github.io/ALevelPE/"]};
+const SITES={"alevel-physics":["A Level Physics","physicsalevel.prodigyai.uk"],"alevel-chemistry":["A Level Chemistry","chemistryalevel.prodigyai.uk"],"alevel-biology":["A Level Biology","biologyalevel.prodigyai.uk"],"alevel-maths":["A Level Maths","mathsalevel.prodigyai.uk"],"alevel-further-maths":["A Level Further Maths","prodigyai-app.github.io/ALevelFurtherMaths/"],"alevel-psychology":["A Level Psychology","psychologyalevel.prodigyai.uk"],"alevel-sociology":["A Level Sociology","sociologyalevel.prodigyai.uk"],"alevel-pe":["A Level PE","prodigyai-app.github.io/ALevelPE/"],"gcse-physics":["GCSE Physics","physicsgcse.prodigyai.uk"],"gcse-chemistry":["GCSE Chemistry","chemistrygcse.prodigyai.uk"],"gcse-biology":["GCSE Biology","biologygcse.prodigyai.uk"],"ks3-science":["KS3 Science","prodigyai-app.github.io/KS3Science/"],"ks3-maths":["KS3 Maths","prodigyai-app.github.io/KS3Maths/"],"gcse-maths":["GCSE Maths","mathsgcse.prodigyai.uk"],"gcse-combined":["Combined Science","combinedsciencegcse.prodigyai.uk"]};
 const SITE=window.ALP_SITE&&SITES[window.ALP_SITE]?window.ALP_SITE:"alevel-physics", SITENAME=SITES[SITE][0];
 const isSync=k=>/^learn-/.test(k)||/^maths-/.test(k)||/^pl-.*-runs$/.test(k)||k==="alp-activity";
 const SPECIAL=new Set(["learn-motion-done","learn-check-state","learn-motion-exam","alp-activity"]);
@@ -6932,9 +6932,9 @@ window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; },get profile(){ re
 })();
 </script>
 
-<script src="subject-icons.js?v=20261023-pe"></script>
+<script src="subject-icons.js?v=20261023-ks3"></script>
 <script src="maths-keyboard.js?v=20261022-keyboard"></script>
 <script src="course-links.js"></script>
-<script src="assessment-core.js?v=20261023-pe"></script>
-<script src="assignments.js?v=20261023-pe"></script>
+<script src="assessment-core.js?v=20261023-ks3"></script>
+<script src="assignments.js?v=20261023-ks3"></script>
 </body></html>
