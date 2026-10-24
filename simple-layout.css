@@ -67,3 +67,14 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none;color:var(--in
 .ks-modes .btn{min-height:44px}
 .ks-learning{margin-top:0}
 .simple-tools-panel{max-height:calc(100vh - 140px);overflow-y:auto}
+
+/* Desktop choosers use the page; opened lessons retain a readable width. */
+@media(min-width:960px){
+ body:not(.in-prac) .wrap{max-width:none}
+ .listmode #switcher{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;align-items:start}
+ .listmode #switcher>.navgroup{min-width:0;gap:12px}
+ .listmode #switcher>.navgroup>.eyebrow{font-size:.8rem;line-height:1.5;letter-spacing:.04em}
+ .listmode #switcher .switcher{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));align-items:stretch}
+ .listmode #switcher .prac{height:100%;min-height:64px;box-sizing:border-box}
+ .listmode #switcher .prac .nm{overflow-wrap:anywhere;line-height:1.3}
+}
