@@ -962,10 +962,11 @@ let UNITS=null, curUnit=null;
 const unitOf=p=>UNITS&&UNITS.find(u=>u.groups.some(([g])=>g===p.group));
 const vis=p=>!(window.LAB_HIDE&&window.LAB_HIDE(p));
 const ulist=()=>(curUnit?list.filter(p=>unitOf(p)===curUnit):list).filter(vis);
-function pnav(){ const L=ulist(), i=L.indexOf(current), prev=L[i-1], next=L[i+1], back=curUnit?curUnit.listLabel:LISTLBL, back2=curUnit?`data-go="u-${curUnit.key}"`:`data-go=""`;
-  const bar=(where)=>`<div class="pnav ${where}">${UNITS?`<button class="btn pn-home" data-go="" title="All units" aria-label="All units">⌂</button>`:""}<button class="btn pn-list" ${back2}>← ${back}</button><span class="pn-pos">${lvl(current)} · ${i+1} of ${L.length}</span><span class="pn-sp"></span>
-<button class="btn pn-prev" ${prev?`data-go="${prev.id}"`:"disabled"} title="${prev?prev.name:""}">‹ <span class="pn-t">${prev?prev.name:"Previous"}</span></button><button class="btn primary pn-next" ${next?`data-go="${next.id}"`:"disabled"} title="${next?next.name:""}"><span class="pn-t">${next?next.name:"Next"}</span> ›</button></div>`;
-  $("#pnav-top").innerHTML=bar("top"); $("#pnav-bot").innerHTML=bar("bot"); }
+function pnav(){ const L=ulist(), i=L.indexOf(current), prev=L[i-1], next=L[i+1];
+  const back=curUnit?`u-${curUnit.key}`:"";
+  $("#pnav-top").innerHTML=`<nav class="pnav top" aria-label="Back to lesson list"><button class="btn pn-list" data-go="${back}">← ${curUnit?.key==="lab"?"Labs":curUnit?.key==="papers"?"Papers":"Lessons"}</button></nav>`;
+  $("#pnav-bot").innerHTML=`<nav class="pnav bot" aria-label="Previous and next lesson"><button class="btn pn-prev" ${prev?`data-go="${prev.id}"`:"disabled"}>‹ Previous</button><span class="pn-sp"></span><button class="btn primary pn-next" ${next?`data-go="${next.id}"`:"disabled"}>Next ›</button></nav>`; }
+
 function route(){ const h=(location.hash||"").slice(1); const on=!!h&&list.some(p=>p.id===h);
   if(UNITS){ const u=h.startsWith("u-")?UNITS.find(x=>"u-"+x.key===h):null; curUnit=on?unitOf(list.find(p=>p.id===h)):u; const hub=!on&&!curUnit;
     $("#hub").hidden=!hub; $("#unit-head").hidden=on||hub; $("#switcher").hidden=on||hub; $("#list-intro").hidden=on||hub;
@@ -978,21 +979,21 @@ function route(){ const h=(location.hash||"").slice(1); const on=!!h&&list.some(
   if(typeof opts_onroute==="function") opts_onroute(on?h:null);
   if(on) show(h); else { list.forEach(p=>{ const sec=$("#lab-"+p.id); if(sec) sec.hidden=true; }); current=null; }
   window.scrollTo(0,0); }
-function renderHub(){ $("#hub-cards").innerHTML=UNITS.map(u=>{ const L=list.filter(p=>unitOf(p)===u&&vis(p)), d=u.done?u.done(L):null;
-  return `<button class="unit u-${u.key}" data-go="u-${u.key}"><span class="u-ico"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">${ICONS[u.icon]||""}</svg></span><span class="u-kind">${u.kind}</span><span class="u-t">${u.title}</span><span class="u-s">${u.sub}</span><span class="u-d">${u.desc}</span>
-<span class="u-f"><span>${L.length} ${u.noun}</span>${d!=null?`<span class="u-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${L.length}" aria-valuenow="${d}" aria-label="Lessons completed"><i style="width:${(100*d/Math.max(L.length,1)).toFixed(1)}%"></i></span><span>${d} done</span>`:""}</span></button>`; }).join(""); }
+function renderHub(){ $("#hub-cards").innerHTML=UNITS.map(u=>
+  `<button class="unit u-${u.key}" data-go="u-${u.key}"><span class="u-ico" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">${ICONS[u.icon]||""}</svg></span><span class="u-t">${u.title}${/^Year/.test(u.kind||"")&&/Optional/.test(u.kind||"")?" (optional)":""}</span></button>`).join(""); }
+
 function go(id){ try{ history.pushState(null,"",id?"#"+id:location.pathname+location.search); }catch(_){ try{ location.hash=id||""; }catch(__){} } route(); }
 function boot(opts={}){
   const GROUPS=opts.groups||[["gcse","AQA GCSE Physics · required practicals"],["ocr","OCR A Level Physics A · practical activity groups"],["alevel","A level Physics · extension practicals"]];
   const GO={}; GROUPS.forEach(([g],i)=>GO[g]=i); list.sort((a,b)=>(GO[a.group]-GO[b.group])||((a.num||0)-(b.num||0)));
-  const grp=(g,title)=>!list.some(p=>p.group===g)?"":`<div class="navgroup" data-g="${g}"><span class="eyebrow">${title}</span><div class="switcher" role="tablist">${list.filter(p=>p.group===g).map(p=>`<button class="prac" role="tab" id="tab-${p.id}" aria-controls="lab-${p.id}" data-id="${p.id}"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">${ICONS[p.icon]||""}</svg></span><span class="lvl">${lvl(p)}${p.tag?` · ${p.tag}`:""}</span><span class="nm">${p.name}</span></button>`).join("")}</div></div>`;
+  const grp=(g,title)=>!list.some(p=>p.group===g)?"":`<div class="navgroup" data-g="${g}"><span class="eyebrow">${title}</span><div class="switcher" role="tablist">${list.filter(p=>p.group===g).map(p=>`<button class="prac" role="tab" id="tab-${p.id}" aria-controls="lab-${p.id}" data-id="${p.id}"><span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">${ICONS[p.icon]||""}</svg></span><span class="nm">${p.name}${/higher/i.test(p.tag||"")?" · Higher":""}</span></button>`).join("")}</div></div>`;
   const nav=$("#switcher");
   nav.innerHTML=GROUPS.map(([g,t])=>grp(g,t)).join("");
   if(opts.list){ LISTMODE=true; opts_onroute=opts.onRoute||null; if(opts.listLabel) LISTLBL=opts.listLabel; document.body.classList.add("listmode");
-    nav.querySelectorAll(".prac").forEach(b=>{ const sec=$("#lab-"+b.dataset.id), p=sec&&sec.querySelector(".lab-head p"); if(p){ const t=p.textContent.trim(), m=t.match(/^.{20,}?[.!?](\s|$)/); const d=document.createElement("span"); d.className="desc"; d.textContent=(m?m[0]:t).trim(); b.appendChild(d); } b.removeAttribute("role"); });
+    nav.querySelectorAll(".prac").forEach(b=>b.removeAttribute("role"));
     nav.querySelectorAll(".switcher").forEach(x=>x.removeAttribute("role"));
     if(opts.units){ UNITS=opts.units; const hub=document.createElement("div"); hub.id="hub"; hub.innerHTML=`${opts.hubIntro?`<p class="muted hub-intro">${opts.hubIntro}</p>`:""}<div id="hub-cards"></div>`; nav.before(hub);
-      const uh=document.createElement("div"); uh.id="unit-head"; uh.innerHTML=`<button class="btn" data-go="">← All units</button><div><span class="eyebrow"></span><h2></h2></div>`; nav.before(uh);
+      const uh=document.createElement("div"); uh.id="unit-head"; uh.innerHTML=`<button class="btn" data-go="">← Units</button><div><span class="eyebrow"></span><h2></h2></div>`; nav.before(uh);
       document.addEventListener("click",e=>{ const b=e.target.closest("#hub [data-go],#unit-head [data-go]"); if(b) go(b.dataset.go); }); }
     const intro=document.createElement("p"); intro.id="list-intro"; intro.className="muted"; intro.textContent=opts.intro||`${list.length} practicals. Choose one to open it; use Next to work through them in order.`; (UNITS?$("#unit-head"):nav).after(intro); if(UNITS) intro.after(nav);
     const t=document.createElement("div"); t.id="pnav-top"; nav.after(t); const bt=document.createElement("div"); bt.id="pnav-bot"; $(".wrap").appendChild(bt);
@@ -6451,9 +6452,9 @@ LEARN.mark(); M.restore();
 })();
 
 </script>
-<script src="topic-search.js?v=20261023-depth"></script>
+
 <script>
-/* Activity tracking (this device only) and the optional student progress report (PDF) */
+/* Activity tracking retained for saved learning and teacher records. */
 (()=>{
 const {$,$$,store}=LAB;
 const U=window.HUB_UNITS||[];
@@ -6469,114 +6470,6 @@ const TICK=10;
 setInterval(()=>{ const id=(location.hash||"").slice(1); if(!ids.has(id)||document.visibilityState!=="visible"||Date.now()-lastInput>180000) return;
   act.time[id]=(act.time[id]||0)+TICK; const d=today(); if(!act.first[id]) act.first[id]=d; act.last[id]=d; if(!act.days.includes(d)) act.days.push(d); store.set(AKEY,act); },TICK*1000);
 
-/* ---------- gather the student's progress ---------- */
-const unitOf=p=>U.find(u=>u.groups.some(([g])=>g===p.group));
-function lessonStats(p){ const sec=document.getElementById("lab-"+p.id); const st={id:p.id,name:p.name,lvl:p.lvl||(p.pag?`PAG ${p.pag}`:""),time:act.time[p.id]||0,done:LEARN.done.has(p.id),cq:0,cok:0,cshown:0,cno:0,em:0,emk:0,eav:0};
-  if(sec){ $$(".qi[data-q]",sec).forEach(el=>{ if(window.TIER_HID&&window.TIER_HID(el)) return; st.cq++; const s=LEARN.STATE[el.dataset.q]; if(s==="ok") st.cok++; else if(s==="shown") st.cshown++; else if(s==="no") st.cno++; });
-    Object.values(EXAM.PARTS).forEach(q=>{ const card=document.getElementById(q.card); if(!card||!sec.contains(card)||(q.ht&&window.TIER==="f")) return; st.eav+=q.m; const v=EXAM.pscore(q); if(v!=null){ st.em+=v; st.emk+=q.m; } }); }
-  return st; }
-function gather(){ const units=U.map(u=>{ const L=LAB.list.filter(p=>unitOf(p)===u&&!(window.LAB_HIDE&&window.LAB_HIDE(p))).map(lessonStats); return {u,L}; });
-  const all=units.flatMap(x=>x.L), les=units.filter(x=>x.u.key!=="lab").flatMap(x=>x.L);
-  const T={time:all.reduce((a,s)=>a+s.time,0),days:act.days.length,done:les.filter(s=>s.done).length,lessons:les.length,cq:les.reduce((a,s)=>a+s.cq,0),cok:les.reduce((a,s)=>a+s.cok,0),em:les.reduce((a,s)=>a+s.em,0),emk:les.reduce((a,s)=>a+s.emk,0),pracs:units.filter(x=>x.u.key==="lab").flatMap(x=>x.L).filter(s=>s.time>0).length};
-  const weak=[], strong=[];
-  les.forEach(s=>{ const u=unitOf(LAB.list.find(p=>p.id===s.id)); const why=[]; let score=0;
-    if(s.emk>=3&&s.em/s.emk<0.6){ why.push(`exam questions ${s.em}/${s.emk} (${Math.round(s.em/s.emk*100)} %)`); score+=1-s.em/s.emk; }
-    if(s.cshown) { why.push(`${s.cshown} check answer${s.cshown>1?"s":""} revealed`); score+=0.2*s.cshown; }
-    if(s.cno) { why.push(`${s.cno} check question${s.cno>1?"s":""} not yet right`); score+=0.25*s.cno; }
-    if(why.length) weak.push({s,u,why:why.join("; "),score});
-    if((s.emk>=3&&s.em/s.emk>=0.8)||(s.done&&s.cshown===0&&s.cno===0&&s.cok>0)) strong.push({s,u,why:s.emk>=3?`exam questions ${s.em}/${s.emk} (${Math.round(s.em/s.emk*100)} %)`:"all check questions right first time or after retrying"}); });
-  weak.sort((a,b)=>b.score-a.score); strong.sort((a,b)=>(b.s.emk?b.s.em/b.s.emk:0.85)-(a.s.emk?a.s.em/a.s.emk:0.85));
-  return {units,T,weak,strong}; }
-const hm=s=>{ const m=Math.round(s/60); return m<60?`${m} min`:`${Math.floor(m/60)} h ${m%60} min`; };
-
-/* ---------- PDF: draw A4 pages on canvases, embed them as JPEG images in a minimal PDF ---------- */
-const PW=1240, PH=1754, M=90;
-const COL={ink:"#1b2128",mut:"#5d6873",line:"#d5dbe0",soft:"#eef1f3",acc:"#c4531a",dat:"#1b6788",good:"#2c7a4c",bad:"#b1352a"};
-const FONT=`-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif`;
-function makePages(info,R){ const pages=[]; let c,y;
-  const newPage=()=>{ const cv=document.createElement("canvas"); cv.width=PW; cv.height=PH; c=cv.getContext("2d"); c.fillStyle="#fff"; c.fillRect(0,0,PW,PH); pages.push(cv); y=M; };
-  const font=(px,w="400")=>{ c.font=`${w} ${px}px ${FONT}`; };
-  const need=h=>{ if(y+h>PH-M-40) newPage(); };
-  const text=(t,x,yy,px,col=COL.ink,w="400",align="left")=>{ font(px,w); c.fillStyle=col; c.textAlign=align; c.textBaseline="alphabetic"; c.fillText(t,x,yy); };
-  const lines=(t,maxW,px,w="400")=>{ font(px,w); const words=String(t).split(/\s+/); let line=""; const out=[]; words.forEach(wd=>{ const tst=line?line+" "+wd:wd; if(c.measureText(tst).width>maxW&&line){ out.push(line); line=wd; } else line=tst; }); if(line) out.push(line); return out; };
-  const wrap=(t,x,maxW,px,col=COL.ink,w="400",lh=1.4)=>{ lines(t,maxW,px,w).forEach(L=>{ need(px*lh); text(L,x,y+px,px,col,w); y+=px*lh; }); };
-  newPage();
-  c.fillStyle=COL.ink; c.fillRect(0,0,PW,150); text(`${TITLE} · Progress report`,M,92,46,"#fff","700"); text(SUBT,M,128,22,"#c9d2da");
-  y=200;
-  text(info.name||"Name not given",M,y,34,COL.ink,"700"); text(new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"}),PW-M,y,24,COL.mut,"400","right"); y+=40;
-  if(info.group) { text(info.group,M,y,24,COL.mut); y+=36; }
-  y+=10; wrap("Shared voluntarily by the student to show the work they have put in and the topics they would like help with. It is generated from the records kept in this student’s own browser, so it only includes work done on this device.",M,PW-2*M,21,COL.mut); y+=20;
-  /* tiles */
-  const tiles=[["Lessons completed",`${R.T.done} / ${R.T.lessons}`],["Check questions right",`${R.T.cok} / ${R.T.cq}`],["Exam marks (parts marked)",R.T.emk?`${R.T.em} / ${R.T.emk}  (${Math.round(R.T.em/R.T.emk*100)} %)`:"none yet"],["Time spent",`${hm(R.T.time)} over ${R.T.days} day${R.T.days===1?"":"s"}`]];
-  const tw=(PW-2*M-30)/2; tiles.forEach(([l,v],i)=>{ const x=M+(i%2)*(tw+30), yy=y+Math.floor(i/2)*120; c.fillStyle=COL.soft; c.fillRect(x,yy,tw,105); text(l.toUpperCase(),x+22,yy+36,18,COL.mut,"600"); text(v,x+22,yy+82,32,COL.ink,"700"); }); y+=250;
-  if(info.note){ const NL=lines(info.note,PW-2*M-40,22).slice(0,24); need(80+NL.length*31); text("Note from the student",M,y+28,26,COL.acc,"700"); y+=46; c.fillStyle=COL.soft; c.fillRect(M,y,PW-2*M,NL.length*31+26); y+=12; NL.forEach(L=>{ text(L,M+20,y+22,22,COL.ink); y+=31; }); y+=44; }
-  const listSec=(title,col,items,empty)=>{ need(90); text(title,M,y+28,26,col,"700"); y+=50; if(!items.length){ wrap(empty,M,PW-2*M,22,COL.mut); y+=14; return; }
-    items.forEach(it=>{ need(64); c.fillStyle=col; c.fillRect(M,y+6,6,46); text(`${it.s.name}`,M+22,y+26,23,COL.ink,"700"); text(`${it.u.title}`,PW-M,y+26,19,COL.mut,"400","right"); text(it.why,M+22,y+54,20,COL.mut); y+=72; }); y+=10; };
-  if(info.weak) listSec("Topics to work on",COL.bad,R.weak.slice(0,10),"Nothing flagged yet: weak areas appear here when exam questions are marked below 60 % or check answers are revealed.");
-  if(info.strong) listSec("Strengths",COL.good,R.strong.slice(0,6),"Strengths appear here as lessons are completed and exam questions are marked.");
-  /* per-unit tables */
-  R.units.forEach(({u,L})=>{ const active=L.filter(s=>s.time>0||s.cok||s.cshown||s.cno||s.emk||s.done); if(u.key==="lab"&&!active.length) return;
-    need(140); y+=10; text(u.title,M,y+30,30,COL.ink,"700"); const sub=u.key==="lab"?`${active.length} of ${L.length} practicals opened`:`${L.filter(s=>s.done).length} of ${L.length} lessons completed`; text(sub,PW-M,y+30,20,COL.mut,"400","right"); y+=50;
-    if(!active.length){ text("Not started yet.",M,y+24,21,COL.mut); y+=50; return; }
-    const cols=u.key==="lab"?[["Practical",M],["Time",PW-M-140]]:[["Lesson",M],["Time",M+520],["Checks",M+650],["Exam marks",M+770],["",PW-M-10]];
-    c.fillStyle=COL.soft; c.fillRect(M,y,PW-2*M,40); cols.forEach(([h,x],i)=>text(h,x+(i?0:12),y+27,18,COL.mut,"700",i===cols.length-1&&u.key!=="lab"?"right":"left")); y+=48;
-    (u.key==="lab"||!info.all?active:L).forEach(s=>{ need(46); font(21,"400"); let nm=`${s.lvl?s.lvl.replace(/^.*· /,"")+" · ":""}${s.name}`; while(c.measureText(nm).width>(u.key==="lab"?820:500)&&nm.length>8) nm=nm.slice(0,-2); if(nm!==`${s.lvl?s.lvl.replace(/^.*· /,"")+" · ":""}${s.name}`) nm+="…";
-      text(nm,M+12,y+28,21,s.time||s.cok||s.emk||s.done?COL.ink:COL.mut);
-      text(s.time?hm(s.time):"–",cols[1][1],y+28,21,COL.ink);
-      if(u.key!=="lab"){ text(s.cq?`${s.cok}/${s.cq}`:"–",cols[2][1],y+28,21,s.cshown||s.cno?COL.bad:COL.ink);
-        if(s.emk){ const f=s.em/s.emk; text(`${s.em}/${s.emk}`,cols[3][1],y+28,21,COL.ink); c.fillStyle=COL.soft; c.fillRect(cols[3][1]+80,y+12,90,18); c.fillStyle=f<0.6?COL.bad:f<0.8?COL.acc:COL.good; c.fillRect(cols[3][1]+80,y+12,90*f,18); } else text(s.eav?"not tried":"–",cols[3][1],y+28,19,COL.mut);
-        if(s.done) text("✓ done",PW-M-10,y+28,20,COL.good,"700","right"); }
-      c.strokeStyle=COL.line; c.lineWidth=1; c.beginPath(); c.moveTo(M,y+42); c.lineTo(PW-M,y+42); c.stroke(); y+=46; });
-    y+=24; });
-  pages.forEach((cv,i)=>{ const k=cv.getContext("2d"); k.font=`400 18px ${FONT}`; k.fillStyle=COL.mut; k.textAlign="left"; k.fillText(`${TITLE} progress report${info.name?" · "+info.name:""}`,M,PH-50); k.textAlign="right"; k.fillText(`Page ${i+1} of ${pages.length}`,PW-M,PH-50); });
-  return pages; }
-function b64bytes(d){ const b=atob(d.split(",")[1]); const u=new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; }
-function buildPDF(pages){ const enc=new TextEncoder(), parts=[], offs=[]; let len=0; const add=x=>{ const b=typeof x==="string"?enc.encode(x):x; parts.push(b); len+=b.length; };
-  const n=pages.length, W=595.28, H=841.89; add("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
-  const obj=(i,body)=>{ offs[i]=len; add(`${i} 0 obj\n`); body(); add("\nendobj\n"); };
-  const kids=pages.map((_,k)=>`${3+k*3} 0 R`).join(" ");
-  obj(1,()=>add("<< /Type /Catalog /Pages 2 0 R >>")); obj(2,()=>add(`<< /Type /Pages /Kids [${kids}] /Count ${n} >>`));
-  pages.forEach((cv,k)=>{ const pi=3+k*3, ci=pi+1, ii=pi+2, jpg=b64bytes(cv.toDataURL("image/jpeg",0.9)), cs=`q ${W} 0 0 ${H} 0 0 cm /Im${k} Do Q`;
-    obj(pi,()=>add(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /XObject << /Im${k} ${ii} 0 R >> >> /Contents ${ci} 0 R >>`));
-    obj(ci,()=>{ add(`<< /Length ${cs.length} >>\nstream\n`); add(cs); add("\nendstream"); });
-    obj(ii,()=>{ add(`<< /Type /XObject /Subtype /Image /Width ${cv.width} /Height ${cv.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`); add(jpg); add("\nendstream"); }); });
-  const total=2+n*3, xref=len; let x=`xref\n0 ${total+1}\n0000000000 65535 f \n`; for(let i=1;i<=total;i++) x+=String(offs[i]).padStart(10,"0")+" 00000 n \n";
-  add(x); add(`trailer\n<< /Size ${total+1} /Root 1 0 R /Info << /Title (${TITLE} progress report) /Producer (${TITLE}) >> >>\nstartxref\n${xref}\n%%EOF`);
-  const out=new Uint8Array(len); let o=0; parts.forEach(b=>{ out.set(b,o); o+=b.length; }); return out; }
-
-/* ---------- the panel ---------- */
-const saved=store.get(NKEY)||{};
-const btn=document.createElement("button"); btn.className="btn rp-open"; btn.type="button"; btn.innerHTML=`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h8"/></svg> Progress report`;
-const head=$("header.top"); if(head) head.appendChild(btn);
-const dlg=document.createElement("div"); dlg.id="rp"; dlg.hidden=true; dlg.setAttribute("role","dialog"); dlg.setAttribute("aria-modal","true"); dlg.setAttribute("aria-labelledby","rp-h");
-dlg.innerHTML=`<div class="rp-box"><div class="rp-top"><h2 id="rp-h">Your progress report</h2><button class="btn rp-x" type="button" aria-label="Close">✕</button></div>
-<p class="muted">This is not a homework check. If you want to, you can save a PDF of your progress and send it to your teacher, to show the work you are putting in or to highlight topics you would like help with. Nothing is sent automatically: the report is made on this device, and you choose whether to share it.</p>
-<div class="rp-sum" id="rp-sum"></div>
-<div class="rp-grid"><label>Your name (optional)<input type="text" id="rp-name" maxlength="60" autocomplete="name"></label><label>Class or teaching group (optional)<input type="text" id="rp-group" maxlength="60"></label></div>
-<label class="rp-full">A note for your teacher (optional): for example, which topics you would like help with<textarea id="rp-note" rows="3" maxlength="800"></textarea></label>
-<div class="rp-checks"><label><input type="checkbox" id="rp-weak" checked> Include topics to work on</label><label><input type="checkbox" id="rp-strong" checked> Include strengths</label><label><input type="checkbox" id="rp-all"> List every lesson, not only the ones I have started</label></div>
-<div class="btnrow"><button class="btn primary" id="rp-go" type="button">Save the PDF</button></div>
-<p class="note" id="rp-msg" aria-live="polite"></p></div>`;
-document.body.appendChild(dlg);
-const fill=()=>{ const R=gather(); $("#rp-sum").innerHTML=`<div><span>Lessons completed</span><b>${R.T.done} / ${R.T.lessons}</b></div><div><span>Check questions right</span><b>${R.T.cok} / ${R.T.cq}</b></div><div><span>Exam marks (parts marked)</span><b>${R.T.emk?`${R.T.em} / ${R.T.emk}`:"none yet"}</b></div><div><span>Time spent</span><b>${hm(R.T.time)}</b></div>`;
-  $("#rp-name").value=saved.name||""; $("#rp-group").value=saved.group||""; $("#rp-msg").textContent=R.weak.length?`${R.weak.length} topic${R.weak.length>1?"s":""} flagged to work on.`:""; };
-let lastFocus=null;
-btn.addEventListener("click",()=>{ lastFocus=document.activeElement; fill(); dlg.hidden=false; document.body.classList.add("rp-on"); $("#rp-name").focus(); });
-const close=()=>{ dlg.hidden=true; document.body.classList.remove("rp-on"); if(lastFocus) lastFocus.focus(); };
-dlg.addEventListener("click",e=>{ if(e.target===dlg||e.target.closest(".rp-x")) close(); });
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!dlg.hidden) close(); });
-let dl=null; (async()=>{ try{ dl=window.claude&&window.claude.use?await window.claude.use("downloads"):null; }catch(_){ dl=null; } })();
-$("#rp-go").addEventListener("click",async()=>{ const msg=$("#rp-msg"), go=$("#rp-go");
-  const info={name:$("#rp-name").value.trim(),group:$("#rp-group").value.trim(),note:$("#rp-note").value.trim(),weak:$("#rp-weak").checked,strong:$("#rp-strong").checked,all:$("#rp-all").checked};
-  saved.name=info.name; saved.group=info.group; store.set(NKEY,saved);
-  go.disabled=true; msg.textContent="Making the PDF…";
-  try{ const pdf=buildPDF(makePages(info,gather())); const fname=`${TITLE} progress${info.name?" - "+info.name.replace(/[^\w \-]/g,""):""} ${today()}.pdf`;
-    if(dl){ try{ await dl.save({filename:fname,data:new Blob([pdf],{type:"application/pdf"})}); msg.textContent="Saved. If you would like to, attach the PDF to an email or a Teams message to your teacher."; }
-      catch(err){ msg.textContent=err&&err.code==="declined"?"Not saved. You can try again whenever you like.":err&&err.code==="rate_limited"?"A save is already waiting for your answer.":"Saving is not available here."; } }
-    else { const url=URL.createObjectURL(new Blob([pdf],{type:"application/pdf"})); const a=document.createElement("a"); a.href=url; a.download=fname; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000); msg.textContent="Saved to your downloads. If you would like to, attach it to an email or a Teams message to your teacher."; }
-  }catch(err){ msg.textContent="Sorry, the PDF could not be made."; }
-  go.disabled=false; });
-window.REPORT={gather,makePages,buildPDF};
 })();
 
 </script>
@@ -6927,14 +6820,16 @@ function csv(){ const c=classes.find(x=>x.id===cur); const head=["Name","Usernam
 
 /* ---------- start ---------- */
 (async()=>{ const {data:{session}}=await sb.auth.getSession(); if(session){ await afterSignIn(false); }
-  else { renderMenu(); let guest=false; try{ guest=sessionStorage.getItem("alp-guest")==="1"; }catch(_){} if(!guest) openAuth("in"); } })();
+  else { renderMenu(); } })();
 window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; },get profile(){ return profile; },openSignIn:()=>openAuth("in")};
 })();
 </script>
 
 <script src="subject-icons.js?v=20261023-ks3"></script>
 <script src="maths-keyboard.js?v=20261022-keyboard"></script>
-<script src="course-links.js"></script>
+
 <script src="assessment-core.js?v=20261023-ks3"></script>
 <script src="assignments.js?v=20261023-ks3"></script>
+<link rel="stylesheet" href="simple-layout.css?v=20261024-all">
+<script src="simple-layout.js?v=20261024-all"></script>
 </body></html>

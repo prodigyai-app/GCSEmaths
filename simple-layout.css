@@ -1,0 +1,69 @@
+/* Shared subject layout: compact choices keep learning near the top. */
+body{padding-block:16px 32px}
+.wrap{gap:16px}
+#hub-cards{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px}
+.unit{align-items:center;align-content:center;padding:14px;min-height:72px}
+.unit .u-ico{grid-row:auto;width:40px;height:40px;border-radius:8px}
+.unit .u-t{font-size:1.1rem;line-height:1.3}
+#list-intro,#unit-head .eyebrow{display:none}
+.listmode .prac{align-items:center;min-height:56px;grid-template-columns:auto 1fr}
+.listmode .prac .ico{grid-row:auto}
+.listmode .navgroup .switcher{grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+@media(max-width:640px){#hub-cards{grid-template-columns:1fr}.brand p{font-size:.85rem}.unit{min-height:60px}}
+/* Header and lesson navigation: only the current task stays in view. */
+header.top{justify-content:flex-start;gap:10px}
+header.top .brand{margin-right:auto}
+header.top h1 a{color:inherit;text-decoration:none}
+.simple-tools{position:relative;z-index:15}
+.simple-tools>summary{list-style:none;display:flex;align-items:center;gap:8px}
+.simple-tools>summary::-webkit-details-marker{display:none}
+.simple-tools>summary::after{content:'⌄'}
+.simple-tools-panel{position:absolute;right:0;top:calc(100% + 8px);width:260px;max-width:calc(100vw - 32px);display:flex;flex-direction:column;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;box-shadow:0 8px 25px #0003}
+.simple-tools-panel .top-actions{display:flex;flex-direction:column;align-items:stretch}
+.simple-tools-panel .btn{width:100%;text-align:left;justify-content:flex-start}
+.simple-tools-panel .acc-pop{position:static;margin-top:6px;min-width:0;box-shadow:none}
+a.btn{display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)}
+.pnav.top{padding:0;margin:0;border:0;background:none;position:static;box-shadow:none}
+#pnav-top{margin-bottom:-4px}
+.pnav.bot{padding:0;border:0;background:none;margin:8px 0}
+.lab-head>.eyebrow{display:none}
+.lesson-tabs{display:flex;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.lesson-tabs .btn{min-width:100px;min-height:44px}
+.lesson-tabs [aria-selected=true]{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.lesson-panel{display:flex;flex-direction:column;gap:16px;min-width:0}
+.lesson-panel:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.lesson-objectives{background:none;border:0;padding:0;color:var(--muted)}
+.lesson-objectives>summary{padding:4px 0;min-height:32px;font-size:.95rem}
+.lesson-objectives .lo{padding-block:12px}
+@media(max-width:640px){
+ body{padding:12px 12px 28px}.wrap{gap:12px}
+ header.top .brand{flex:1 1 100%;gap:10px}
+ .brand svg{width:40px;height:40px}
+ header.top h1{font-size:1.55rem}
+ .simple-papers{margin-right:auto}
+ .pnav .pn-list{flex:none}.pnav .pn-prev,.pnav .pn-next{flex:0 1 auto}
+ .lesson-tabs .btn{flex:1;min-width:0}
+ .lab-head h2{font-size:1.5rem}
+ .lcard{padding:14px}
+}
+.brand svg rect:first-child{fill:var(--accent-soft)}
+.lab-head{max-width:none}
+.lab>.assignment-actions{display:none}
+.lesson-objectives>p{margin-top:12px;max-width:70ch}
+
+.simple-secondary,.hub-intro{display:none!important}
+.simple-options{padding:0;background:none;border:0}
+.simple-options>summary{min-height:44px;padding:10px;font-weight:600}
+.simple-options .psych-options,.simple-options .fm-options{padding:8px;border:0;margin:0;max-width:100%;min-width:0;background:none}
+.simple-options h2,.simple-options .psych-options>p:not([role=status]),.simple-options .fm-options>p:not([role=status]){display:none}
+.simple-options label,.simple-options select{max-width:100%;min-width:0}
+.simple-options .bio-controls,.simple-options .fm-controls{display:flex;flex-direction:column;align-items:stretch}
+.simple-options .bio-controls label{flex:none}
+.simple-study-tier{padding:8px 12px;margin:0;width:fit-content}
+.simple-tier{align-self:flex-start}
+.ks-year-tools{padding:0;border:0;background:none;margin:0!important;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.ks-year-tools>div:first-child,.ks-year-tools>p{display:none}
+.ks-year-tools .ks-extra-toggle{font-size:.88rem}
+.ks-modes .btn{min-height:44px}
+.ks-learning{margin-top:0}
+.simple-tools-panel{max-height:calc(100vh - 140px);overflow-y:auto}
