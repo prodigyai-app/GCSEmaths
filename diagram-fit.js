@@ -12,6 +12,7 @@
   const MIN = 11;          // smallest on-screen label size, px
   const READ = 14;         // label size in the full-screen view, px
   const MAX_GROW = 1.6;    // never widen a diagram in the page beyond this multiple of the column
+  const WIDE = 700;        // columns at least this wide never scroll sideways; they offer Enlarge instead
   const SKIP = 'header,nav,button,.btn,.unit,.u-ico,.prac,.lesson-tabs,[data-subject-icon],.dg-ignore,.dg-viewer';
 
   const current = () => document.querySelector('[id^="lab-"]:not([hidden])') || document.body;
@@ -93,9 +94,10 @@
       svg.dataset.dgW = svg.style.width; svg.dataset.dgMax = svg.style.maxWidth; svg.dataset.dgH = svg.style.height;
       svg.dataset.dgFit = '1';
       svg.style.height = 'auto';
-      if (want <= avail) {
-        // Room to grow within the column: lift any fixed maximum width.
-        svg.style.width = '100%'; svg.style.maxWidth = Math.round(want) + 'px';
+      if (want <= avail || avail >= WIDE) {
+        // Room to grow within the column (or a wide desktop column, where sideways
+        // scrolling is unhelpful): fill up to the size needed and offer Enlarge.
+        svg.style.width = '100%'; svg.style.maxWidth = Math.round(Math.min(want, avail)) + 'px';
         unwrap(svg);
       } else {
         wrap(svg); scrolled = true;
