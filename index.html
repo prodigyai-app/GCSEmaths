@@ -1499,17 +1499,29 @@ window.MGRAPH=1;
 
 /* hand-drawn axes and curves: o={w,h,x:[min,max],y:[min,max],fns:[[f,cls]],pts:[[x,y,label]],step:1,lab:true} */
 function graph(o){ const w=o.w||300,h=o.h||240,[x0,x1]=o.x,[y0,y1]=o.y,pad=o.pad||24,padL=o.padL||(Math.max(Math.abs(y0),Math.abs(y1))>=100&&x0>=0?40:24),X=x=>padL+(x-x0)/(x1-x0)*(w-padL-pad),Y=y=>h-pad-(y-y0)/(y1-y0)*(h-2*pad); let g="";
+  /* label placement: keep every label inside the diagram and clear of the others */
+  const boxes=[], tw=(t,s)=>String(t).replace(/<[^>]+>/g,"").length*s*.56;
+  const bx=(x,y,t,s,a)=>{ const W=tw(t,s), l=a==="end"?x-W:a==="middle"?x-W/2:x; return [l,y-s*.82,l+W,y+s*.28]; };
+  const hit=(B)=>boxes.some(c=>B[0]<c[2]-1&&B[2]>c[0]+1&&B[1]<c[3]-1&&B[3]>c[1]+1);
+  const inside=B=>B[0]>=1&&B[2]<=w-1&&B[1]>=1&&B[3]<=h-1;
+  const put=(cands,t,s,c)=>{ let pick=cands.find(([x,y,a])=>{ const B=bx(x,y,t,s,a); return inside(B)&&!hit(B); })||cands.find(([x,y,a])=>inside(bx(x,y,t,s,a)));
+    if(!pick){ let [x,y,a]=cands[0]; const B=bx(x,y,t,s,a); if(B[2]>w-2){ x-=B[2]-(w-2); } if(B[0]<2){ x+=2-B[0]; } if(B[1]<2) y+=2-B[1]; if(B[3]>h-2) y-=B[3]-(h-2); pick=[x,y,a]; }
+    const [x,y,a]=pick; boxes.push(bx(x,y,t,s,a)); return tx(+x.toFixed(1),+y.toFixed(1),t,{c,s,a}); };
   (o.fills||[]).forEach(([P,col])=>{ g+=`<path d="M${P.map(([x,y])=>X(x).toFixed(1)+" "+Y(y).toFixed(1)).join(" L")} Z" style="fill:${col||"rgba(217,102,26,.2)"};stroke:none"/>`; });
   const st=o.step||1, lst=o.lstep||st, yst=o.ystep||st, ylst=o.ylstep||o.ystep||lst;
   if(x0<=0&&x1>=0) g+=ln(X(0),Y(y0),X(0),Y(y1)); if(y0<=0&&y1>=0) g+=ln(X(x0),Y(0),X(x1),Y(0));
   const ax=y0<=0&&y1>=0?Y(0):Y(y0), ay=x0<=0&&x1>=0?X(0):X(x0);
-  for(let x=Math.ceil(x0/st)*st;x<=x1+1e-9;x+=st){ if(Math.abs(x)<1e-9) continue; g+=`<path class="pen" d="M${X(x).toFixed(1)} ${ax-3} v6"/>`; if(o.lab!==false&&Math.abs(Math.round(x/lst)*lst-x)<1e-9) g+=tx(X(x),ax+18,+x.toFixed(2),{s:14}); }
-  for(let y=Math.ceil(y0/yst)*yst;y<=y1+1e-9;y+=yst){ if(Math.abs(y)<1e-9) continue; g+=`<path class="pen" d="M${ay-3} ${Y(y).toFixed(1)} h6"/>`; if(o.lab!==false&&Math.abs(Math.round(y/ylst)*ylst-y)<1e-9) g+=tx(ay-8,Y(y)+5,+y.toFixed(2),{s:14,a:"end"}); }
-  g+=tx(X(x1)-6,ax-8,o.xl||"x",{s:16,a:o.xl?"end":"middle"})+tx(ay+10,Y(y1)+12,o.yl||"y",{s:16,a:"start"});
-  (o.fns||[]).forEach(([f,cls,lab])=>{ let d="",on=false; for(let i=0;i<=200;i++){ const x=x0+(x1-x0)*i/200, y=f(x); if(!isFinite(y)||y<y0-1e-9||y>y1+1e-9){ on=false; continue; } d+=(on?"L":"M")+X(x).toFixed(1)+" "+Y(y).toFixed(1); on=true; } g+=`<path class="${cls||"pen"}" d="${d}"/>`; if(lab) g+=tx(lab[0]!=null?X(lab[0]):0,Y(lab[1]),lab[2],{c:cls==="pen2"?"hwt2":"hwt",s:16,a:"start"}); });
-  (o.polys||[]).forEach(([P,cls,closed])=>{ g+=poly(P.map(([x,y])=>[X(x),Y(y)]),closed!==false,cls||"pen"); });
-  (o.texts||[]).forEach(([x,y,t,c])=>{ g+=tx(X(x),Y(y),t,{c:c||"hwt2",s:15}); });
-  (o.pts||[]).forEach(([x,y,l,c,pos])=>{ g+=`<circle cx="${X(x).toFixed(1)}" cy="${Y(y).toFixed(1)}" r="3.5" class="pfill"/>`; if(l){ const R=X(x)>w-70; g+=tx(X(x)+(R?-8:8),Y(y)+(pos==="below"?20:-8),l,{c:c||"hwt2",s:15,a:R?"end":"start"}); } });
+  boxes.push([X(x0),ax-1.5,X(x1),ax+1.5],[ay-1.5,Y(y1),ay+1.5,Y(y0)]);
+  const xl=o.xl||"x", yl=o.yl||"y", xlb=bx(X(x1)-6,ax-8,xl,16,o.xl?"end":"middle"), ylb=bx(ay+10,Y(y1)+12,yl,16,"start");
+  for(let x=Math.ceil(x0/st)*st;x<=x1+1e-9;x+=st){ if(Math.abs(x)<1e-9) continue; g+=`<path class="pen" d="M${X(x).toFixed(1)} ${ax-3} v6"/>`; if(o.lab!==false&&Math.abs(Math.round(x/lst)*lst-x)<1e-9){ const t=+x.toFixed(2), B=bx(X(x),ax+18,t,14,"middle"); if(B[2]<=w&&B[0]>=0){ boxes.push(B); g+=tx(X(x),ax+18,t,{s:14}); } } }
+  for(let y=Math.ceil(y0/yst)*yst;y<=y1+1e-9;y+=yst){ if(Math.abs(y)<1e-9) continue; g+=`<path class="pen" d="M${ay-3} ${Y(y).toFixed(1)} h6"/>`; if(o.lab!==false&&Math.abs(Math.round(y/ylst)*ylst-y)<1e-9){ const t=+y.toFixed(2), B=bx(ay-8,Y(y)+5,t,14,"end"); if(B[0]>=0&&!(B[1]<xlb[3]&&B[3]>xlb[1]&&B[0]<xlb[2]&&B[2]>xlb[0])){ boxes.push(B); g+=tx(ay-8,Y(y)+5,t,{s:14,a:"end"}); } } }
+  boxes.push(xlb,ylb); g+=tx(X(x1)-6,ax-8,xl,{s:16,a:o.xl?"end":"middle"})+tx(ay+10,Y(y1)+12,yl,{s:16,a:"start"});
+  const labs=[];
+  (o.fns||[]).forEach(([f,cls,lab])=>{ let d="",on=false; for(let i=0;i<=200;i++){ const x=x0+(x1-x0)*i/200, y=f(x); if(!isFinite(y)||y<y0-1e-9||y>y1+1e-9){ on=false; continue; } d+=(on?"L":"M")+X(x).toFixed(1)+" "+Y(y).toFixed(1); on=true; } g+=`<path class="${cls||"pen"}" d="${d}"/>`; for(let i=0;i<=120;i++){ const x=x0+(x1-x0)*i/120, y=f(x); if(isFinite(y)&&y>=y0&&y<=y1) boxes.push([X(x)-2.5,Y(y)-2.5,X(x)+2.5,Y(y)+2.5]); } if(lab) labs.push(()=>{ const x=lab[0]!=null?X(lab[0]):0, y=Y(lab[1]), C=[]; for(const dy of [0,-16,18,-32,34,-48,50]) for(const [dx,a] of [[0,"start"],[0,"end"],[30,"start"],[-30,"end"],[70,"start"],[-70,"end"],[110,"start"]]) C.push([x+dx,y+dy,a]); return put(C,lab[2],16,cls==="pen2"?"hwt2":"hwt"); }); });
+  (o.polys||[]).forEach(([P,cls,closed])=>{ const Q=P.map(([x,y])=>[X(x),Y(y)]); g+=poly(Q,closed!==false,cls||"pen"); Q.forEach((q,i)=>{ const r=Q[(i+1)%Q.length]; if(i===Q.length-1&&closed===false) return; const n=Math.max(1,Math.ceil(Math.hypot(r[0]-q[0],r[1]-q[1])/6)); for(let k=0;k<=n;k++){ const x=q[0]+(r[0]-q[0])*k/n, y=q[1]+(r[1]-q[1])*k/n; boxes.push([x-2,y-2,x+2,y+2]); } }); });
+  (o.pts||[]).forEach(([x,y,l,c,pos])=>{ g+=`<circle cx="${X(x).toFixed(1)}" cy="${Y(y).toFixed(1)}" r="3.5" class="pfill"/>`; boxes.push([X(x)-4,Y(y)-4,X(x)+4,Y(y)+4]); if(l){ const px=X(x),py=Y(y),c2=c||"hwt2"; labs.push(()=>{ const N=[[px+8,py-8,"start"],[px-8,py-8,"end"]], S=[[px+8,py+20,"start"],[px-8,py+20,"end"]], R=px>w-70; let cs=pos==="below"?[...S,...N]:[...N,...S]; if(R) cs=cs.slice().sort((a,b)=>(a[2]==="end"?0:1)-(b[2]==="end"?0:1)); return put(cs.concat([[px,py-12,"middle"],[px,py+24,"middle"],[px+14,py+5,"start"],[px-14,py+5,"end"],[px+8,py-24,"start"],[px-8,py-24,"end"],[px+8,py+36,"start"],[px-8,py+36,"end"]]),l,15,c2); }); } });
+  (o.texts||[]).forEach(([x,y,t,c])=>{ const px=X(x),py=Y(y); labs.push(()=>put([[px,py,"middle"],[px,py-16,"middle"],[px,py+18,"middle"],[px+10,py,"start"],[px-10,py,"end"]],t,15,c||"hwt2")); });
+  labs.forEach(f=>{ g+=f(); });
   return svg(w,h,g); }
 return {restoreHelp,rescoreFill:()=>document.querySelectorAll(".lcard.fill").forEach(score),graph,check:chk,HT,NC,CA,eb,hand,tech,fill:fillReg,restore,ln,poly,tx,circ,svg,ang,right,fr,sq,same};
 })();
@@ -1730,7 +1742,7 @@ lesson({id:"nu1",group:"a",num:2,lvl:"Number · Lesson 2",name:"Rounding and est
 /* NU2: factors, multiples, primes, HCF and LCM */
 (()=>{
 const {B,lesson}=LEARN, {eb,hand,tech,fill,svg,ln,tx,circ}=M;
-const tree=svg(300,250,ln(130,26,88,62)+ln(130,26,172,62)+ln(176,86,140,120)+ln(176,86,212,120)+ln(214,142,184,176)+ln(214,142,244,176)+ln(250,198,226,232)+ln(250,198,274,232)+tx(130,20,"180")+tx(84,80,"2")+circ(84,74,13,"pen2")+tx(178,80,"90")+tx(136,138,"2")+circ(136,132,13,"pen2")+tx(214,138,"45")+tx(180,194,"5")+circ(180,188,13,"pen2")+tx(250,194,"9")+tx(222,250,"3")+circ(222,244,13,"pen2")+tx(278,250,"3")+circ(278,244,13,"pen2"));
+const tree=svg(300,266,ln(130,26,88,62)+ln(130,26,172,62)+ln(176,86,140,120)+ln(176,86,212,120)+ln(214,142,184,176)+ln(214,142,244,176)+ln(250,198,226,232)+ln(250,198,274,232)+tx(130,20,"180")+tx(84,80,"2")+circ(84,74,13,"pen2")+tx(178,80,"90")+tx(136,138,"2")+circ(136,132,13,"pen2")+tx(214,138,"45")+tx(180,194,"5")+circ(180,188,13,"pen2")+tx(250,194,"9")+tx(222,250,"3")+circ(222,244,13,"pen2")+tx(278,250,"3")+circ(278,244,13,"pen2"));
 const venn=svg(300,170,`<ellipse cx="110" cy="85" rx="85" ry="70" class="pen"/><ellipse cx="190" cy="85" rx="85" ry="70" class="pen"/>`+tx(70,24,"60",{c:"hwt2"})+tx(230,24,"84",{c:"hwt2"})+tx(75,92,"5")+tx(150,78,"2  2")+tx(150,108,"3")+tx(228,92,"7"));
 
 lesson({id:"nu2",group:"a",num:3,lvl:"Number · Lesson 3",name:"Primes, HCF and LCM",icon:"prime",
@@ -2490,9 +2502,9 @@ lesson({id:"al8",group:"b",num:6,lvl:"Algebra · Lesson 6",name:"Solving quadrat
 (()=>{
 const {B,lesson}=LEARN, {eb,hand,tech,fill,HT,svg,ln,tx,circ}=M;
 /* number line for −2 < x ≤ 3 */
-const NL=(()=>{ const X=v=>30+(v+4)*30; let g=ln(15,40,315,40); for(let v=-4;v<=6;v++){ g+=ln(X(v),34,X(v),46)+tx(X(v),66,v,{s:14}); }
+const NL=(()=>{ const X=v=>24+(v+4)*29; let g=ln(12,40,318,40); for(let v=-4;v<=6;v++){ g+=ln(X(v),34,X(v),46)+tx(X(v),66,v,{s:14}); }
  g+=`<circle cx="${X(-2)}" cy="40" r="6" class="pen" fill="none"/><circle cx="${X(3)}" cy="40" r="6" class="pfill"/>`+`<path class="pen2" style="stroke-width:4" d="M${X(-2)+6} 40 H${X(3)-6}"/>`;
- g+=tx(X(-2),20,"open: not included",{s:13,c:"hwt2"})+tx(X(3)+4,20,"filled: included",{s:13,c:"hwt2",a:"start"}); return svg(330,76,g); })();
+ g+=tx(X(-2),20,"open: not included",{s:13,c:"hwt2"})+tx(X(3)+4,20,"filled: included",{s:13,c:"hwt2",a:"middle"}); return svg(330,76,g); })();
 lesson({id:"al9",group:"b",num:7,lvl:"Algebra · Lesson 7",name:"Inequalities",icon:"ineq",
  eyebrow:eb("Algebra",7),title:"Solving inequalities",
  intro:"Solving linear inequalities, showing them on a number line, listing integer solutions, and (Higher) solving quadratic inequalities and showing regions on graphs.",
@@ -6831,5 +6843,7 @@ window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; },get profile(){ re
 <script src="assessment-core.js?v=20261023-ks3"></script>
 <script src="assignments.js?v=20261023-ks3"></script>
 <link rel="stylesheet" href="simple-layout.css?v=20261024-desktop">
+<link rel="stylesheet" href="diagram-fit.css?v=20261025-diagrams">
 <script src="simple-layout.js?v=20261024-all"></script>
+<script src="diagram-fit.js?v=20261025-diagrams"></script>
 </body></html>
