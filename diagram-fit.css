@@ -2,7 +2,7 @@
 .dg-scroll{display:block;width:100%;min-width:0;contain:inline-size;max-width:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;border-radius:10px;scrollbar-width:thin}
 .dg-scroll>svg{display:block;max-width:none!important}
 .dg-scroll:focus-visible,.tbl-scroll:focus-visible,.dg-viewer-body:focus-visible{outline:2px solid var(--accent,#f7931e);outline-offset:2px}
-.dg-tools{contain:inline-size;display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:.3rem 0 .7rem}
+.dg-tools{contain:inline-size;flex:1 0 100%;width:100%;max-width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:.3rem 0 .7rem}
 .dg-hint{font-size:.8rem;line-height:1.3;color:var(--muted,#8a93a8)}
 .dg-enlarge{flex:none;font:inherit;font-size:.82rem;font-weight:600;padding:.3rem .7rem;border-radius:999px;border:1px solid var(--line,#33405e);background:transparent;color:var(--accent,#f7931e);cursor:pointer}
 .dg-enlarge:hover{background:var(--accent-soft,rgba(247,147,30,.12))}
@@ -21,4 +21,5 @@
 [id^="lab-"] fieldset{min-width:0;max-width:100%}
 [id^="lab-"] svg{max-width:100%}
 .dg-scroll>svg,.dg-viewer-body>svg{max-width:none}
+*:has(> .dg-tools){flex-wrap:wrap}
 @media print{.dg-tools,.dg-viewer{display:none!important}}
