@@ -1,0 +1,10 @@
+/* Let lesson text fill its own card or grid column at every screen size. */
+.lab .prose,
+.lab .xstem,
+.lab .lcard.exam .xintro,
+.lab .lesson-objectives > p,
+.lab .ks-learning .ks-slide .ks-points{
+  max-width:none;
+  min-width:0;
+}
+.lab .prose{align-self:stretch}
