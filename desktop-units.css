@@ -1,0 +1,12 @@
+/* Home unit grids use desktop height as well as width. Mobile keeps compact choices. */
+@media(min-width:960px){
+  body:not(.in-prac) .wrap{max-width:none}
+  #hub-cards.desktop-unit-grid{grid-template-columns:repeat(var(--unit-grid-columns),minmax(0,1fr));grid-auto-rows:minmax(104px,1fr);min-height:var(--unit-grid-height);gap:14px;align-items:stretch}
+  #hub-cards.desktop-unit-grid>.unit{grid-column:span var(--unit-span);padding:clamp(18px,2vw,30px);align-items:center;align-content:center;min-width:0}
+  #hub-cards.desktop-unit-grid>.unit .u-ico{width:clamp(48px,4vw,68px);height:clamp(48px,4vw,68px);border-radius:12px}
+  #hub-cards.desktop-unit-grid>.unit .u-ico svg{width:70%;height:70%}
+  #hub-cards.desktop-unit-grid>.unit .u-t{font-size:clamp(1.2rem,1.6vw,1.8rem);line-height:1.25;overflow-wrap:anywhere}
+  #hub-cards.desktop-subject-grid{align-items:stretch;min-height:var(--unit-grid-height)}
+  #hub-cards.desktop-subject-grid>.combined-subject{display:flex;flex-direction:column;min-height:var(--unit-grid-height)}
+  #hub-cards.desktop-subject-grid .combined-subject-units{flex:1;grid-auto-rows:minmax(64px,1fr)}
+}
