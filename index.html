@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261023-ks3">
-<link rel="stylesheet" href="maths-keyboard.css?v=20261022-keyboard">
+<link rel="stylesheet" href="maths-keyboard.css?v=20261113-contrast">
 <script src="math-notation.js?v=20261022-keyboard"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="numeric-tools.js?v=20261022-keyboard"></script>
@@ -443,6 +443,7 @@ body.rp-on{overflow:hidden}
 :is(.hw-ink,.row2) svg .pen{stroke:var(--pen);stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 :is(.hw-ink,.row2) svg .pen2{stroke:var(--pen2);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 :is(.hw-ink,.row2) svg .pfill{fill:var(--pen)}
+:is(.hw-ink,.row2) svg text{paint-order:stroke;stroke:#fffdf7;stroke-width:3px;stroke-linejoin:round}
 :is(.hw-ink,.row2) svg .hwt{font-family:"Kalam","Comic Sans MS",cursive;fill:var(--pen);font-size:20px}
 :is(.hw-ink,.row2) svg .hwt2{font-family:"Kalam","Comic Sans MS",cursive;fill:var(--pen2);font-size:18px}
 .hw-note{font-size:1.12rem;color:var(--pen2);line-height:1.35}
@@ -1498,7 +1499,7 @@ const chk=(qs,t)=>LEARN.B.check(qs.map(q=>q.opts?q:{tol:0,abs:1e-6,...q}),t);
 window.MGRAPH=1;
 
 /* hand-drawn axes and curves: o={w,h,x:[min,max],y:[min,max],fns:[[f,cls]],pts:[[x,y,label]],step:1,lab:true} */
-function graph(o){ const w=o.w||300,h=o.h||240,[x0,x1]=o.x,[y0,y1]=o.y,pad=o.pad||24,padL=o.padL||(Math.max(Math.abs(y0),Math.abs(y1))>=100&&x0>=0?40:24),X=x=>padL+(x-x0)/(x1-x0)*(w-padL-pad),Y=y=>h-pad-(y-y0)/(y1-y0)*(h-2*pad); let g="";
+function graph(o){ const w=o.w||300,h=o.h||240,[x0,x1]=o.x,[y0,y1]=o.y,pad=o.pad||24,padL=o.padL||(Math.max(Math.abs(y0),Math.abs(y1))>=100&&x0>=0?40:24),padB=o.padB||pad,X=x=>padL+(x-x0)/(x1-x0)*(w-padL-pad),Y=y=>h-padB-(y-y0)/(y1-y0)*(h-pad-padB); let g="";
   /* label placement: keep every label inside the diagram and clear of the others */
   const boxes=[], tw=(t,s)=>String(t).replace(/<[^>]+>/g,"").length*s*.56;
   const bx=(x,y,t,s,a)=>{ const W=tw(t,s), l=a==="end"?x-W:a==="middle"?x-W/2:x; return [l,y-s*.82,l+W,y+s*.28]; };
@@ -1512,10 +1513,10 @@ function graph(o){ const w=o.w||300,h=o.h||240,[x0,x1]=o.x,[y0,y1]=o.y,pad=o.pad
   if(x0<=0&&x1>=0) g+=ln(X(0),Y(y0),X(0),Y(y1)); if(y0<=0&&y1>=0) g+=ln(X(x0),Y(0),X(x1),Y(0));
   const ax=y0<=0&&y1>=0?Y(0):Y(y0), ay=x0<=0&&x1>=0?X(0):X(x0);
   boxes.push([X(x0),ax-1.5,X(x1),ax+1.5],[ay-1.5,Y(y1),ay+1.5,Y(y0)]);
-  const xl=o.xl||"x", yl=o.yl||"y", xlb=bx(X(x1)-6,ax-8,xl,16,o.xl?"end":"middle"), ylb=bx(ay+10,Y(y1)+12,yl,16,"start");
+  const xl=o.xl||"x", yl=o.yl||"y", xlY=o.xlBelow?ax+38:ax-8, xlb=bx(X(x1)-6,xlY,xl,16,o.xl?"end":"middle"), ylb=bx(ay+10,Y(y1)+12,yl,16,"start");
   for(let x=Math.ceil(x0/st)*st;x<=x1+1e-9;x+=st){ if(Math.abs(x)<1e-9) continue; g+=`<path class="pen" d="M${X(x).toFixed(1)} ${ax-3} v6"/>`; if(o.lab!==false&&Math.abs(Math.round(x/lst)*lst-x)<1e-9){ const t=+x.toFixed(2), B=bx(X(x),ax+18,t,14,"middle"); if(B[2]<=w&&B[0]>=0){ boxes.push(B); g+=tx(X(x),ax+18,t,{s:14}); } } }
   for(let y=Math.ceil(y0/yst)*yst;y<=y1+1e-9;y+=yst){ if(Math.abs(y)<1e-9) continue; g+=`<path class="pen" d="M${ay-3} ${Y(y).toFixed(1)} h6"/>`; if(o.lab!==false&&Math.abs(Math.round(y/ylst)*ylst-y)<1e-9){ const t=+y.toFixed(2), B=bx(ay-8,Y(y)+5,t,14,"end"); if(B[0]>=0&&!(B[1]<xlb[3]&&B[3]>xlb[1]&&B[0]<xlb[2]&&B[2]>xlb[0])){ boxes.push(B); g+=tx(ay-8,Y(y)+5,t,{s:14,a:"end"}); } } }
-  boxes.push(xlb,ylb); g+=tx(X(x1)-6,ax-8,xl,{s:16,a:o.xl?"end":"middle"})+tx(ay+10,Y(y1)+12,yl,{s:16,a:"start"});
+  boxes.push(xlb,ylb); g+=tx(X(x1)-6,xlY,xl,{s:16,a:o.xl?"end":"middle"})+tx(ay+10,Y(y1)+12,yl,{s:16,a:"start"});
   const labs=[];
   (o.fns||[]).forEach(([f,cls,lab])=>{ let d="",on=false; for(let i=0;i<=200;i++){ const x=x0+(x1-x0)*i/200, y=f(x); if(!isFinite(y)||y<y0-1e-9||y>y1+1e-9){ on=false; continue; } d+=(on?"L":"M")+X(x).toFixed(1)+" "+Y(y).toFixed(1); on=true; } g+=`<path class="${cls||"pen"}" d="${d}"/>`; for(let i=0;i<=120;i++){ const x=x0+(x1-x0)*i/120, y=f(x); if(isFinite(y)&&y>=y0&&y<=y1) boxes.push([X(x)-2.5,Y(y)-2.5,X(x)+2.5,Y(y)+2.5]); } if(lab) labs.push(()=>{ const x=lab[0]!=null?X(lab[0]):0, y=Y(lab[1]), C=[]; for(const dy of [0,-16,18,-32,34,-48,50]) for(const [dx,a] of [[0,"start"],[0,"end"],[30,"start"],[-30,"end"],[70,"start"],[-70,"end"],[110,"start"]]) C.push([x+dx,y+dy,a]); return put(C,lab[2],16,cls==="pen2"?"hwt2":"hwt"); }); });
   (o.polys||[]).forEach(([P,cls,closed])=>{ const Q=P.map(([x,y])=>[X(x),Y(y)]); g+=poly(Q,closed!==false,cls||"pen"); Q.forEach((q,i)=>{ const r=Q[(i+1)%Q.length]; if(i===Q.length-1&&closed===false) return; const n=Math.max(1,Math.ceil(Math.hypot(r[0]-q[0],r[1]-q[1])/6)); for(let k=0;k<=n;k++){ const x=q[0]+(r[0]-q[0])*k/n, y=q[1]+(r[1]-q[1])*k/n; boxes.push([x-2,y-2,x+2,y+2]); } }); });
@@ -1553,7 +1554,7 @@ function cuboid(lw,lh,ld,o={}){ const x=40,y=60,w=150,h=80,dx=50,dy=-34; let g=l
   return fig(300,170,g); }
 function cylinder(rl,hl,s=1){ const cx=90,top=40,h=115,rx=55,ry=15; let g=`<ellipse cx="${cx}" cy="${top}" rx="${rx}" ry="${ry}" class="pen"/><path class="pen" d="M${cx-rx} ${top+h} A${rx} ${ry} 0 0 0 ${cx+rx} ${top+h}"/><path class="pen dash" d="M${cx-rx} ${top+h} A${rx} ${ry} 0 0 1 ${cx+rx} ${top+h}"/>`+ln(cx-rx,top,cx-rx,top+h)+ln(cx+rx,top,cx+rx,top+h)+ln(cx,top,cx+rx,top,"pen2")+`<circle cx="${cx}" cy="${top}" r="2.5" class="pfill"/>`+L(cx+rx/2,top-20,rl)+L(cx+rx+10,top+h/2+5,hl,{a:"start"});
   return g; }
-function cone(rl,hl,o={}){ const cx=o.cx||90,apex=o.apex||20,base=o.base||140,rx=o.rx||55,ry=12; let g=`<path class="pen" d="M${cx-rx} ${base} A${rx} ${ry} 0 0 0 ${cx+rx} ${base}"/><path class="pen dash" d="M${cx-rx} ${base} A${rx} ${ry} 0 0 1 ${cx+rx} ${base}"/>`+ln(cx-rx,base,cx,apex)+ln(cx+rx,base,cx,apex)+ln(cx,apex,cx,base,"pen dash")+ln(cx,base,cx+rx,base,"pen2")+(rl?L(cx+rx/2,base+20,rl):"")+(hl?L(cx-rx*0.6-8,(apex+base)/2+5,hl,{a:"end"}):"");
+function cone(rl,hl,o={}){ const cx=o.cx||90,apex=o.apex||20,base=o.base||140,rx=o.rx||55,ry=12; let g=`<path class="pen" d="M${cx-rx} ${base} A${rx} ${ry} 0 0 0 ${cx+rx} ${base}"/><path class="pen dash" d="M${cx-rx} ${base} A${rx} ${ry} 0 0 1 ${cx+rx} ${base}"/>`+ln(cx-rx,base,cx,apex)+ln(cx+rx,base,cx,apex)+ln(cx,apex,cx,base,"pen dash")+ln(cx,base,cx+rx,base,"pen2")+(rl?L(cx+rx/2,base+(o.rlDy||28),rl):"")+(hl?L(cx-rx*0.6-8,(apex+base)/2+5,hl,{a:"end"}):"");
   return g; }
 const R=(a)=>a*Math.PI/180;
 function sector(r,angle,rl,al){ const cx=40,cy=150,Rp=150,a=Math.min(angle,170), ex=cx+Rp*Math.cos(R(a)), ey=cy-Rp*Math.sin(R(a)); const big=angle>180?1:0;
@@ -1567,7 +1568,7 @@ function venn(a,b,tot){ return fig(300,170,`<rect x="6" y="6" width="288" height
 function regPoly(n,o={}){ const cx=130,cy=95,r=70,P=[]; for(let i=0;i<n;i++){ const t=R(90+i*360/n+(n%2?0:180/n)); P.push([cx+r*Math.cos(t),cy-r*Math.sin(t)]); } return {P,g:shape(P,o)}; }
 
 /* ---- statistics / probability diagrams ---- */
-function histogram(bars,o){ const top=o.ymax; return wrap(M.graph({w:o.w||320,h:o.h||230,x:o.x,y:[0,top],step:o.step,lstep:o.lstep,ystep:o.ystep,ylstep:o.ylstep,pad:28,padL:40,xl:o.xl,yl:o.yl||"frequency density",polys:bars.map(([a,b,f])=>[[[a,0],[a,f],[b,f],[b,0]],"pen2"])}),false); }
+function histogram(bars,o){ const top=o.ymax; return wrap(M.graph({w:o.w||320,h:(o.h||230)+18,padB:46,xlBelow:true,x:o.x,y:[0,top],step:o.step,lstep:o.lstep,ystep:o.ystep,ylstep:o.ylstep,pad:28,padL:40,xl:o.xl,yl:o.yl||"frequency density",polys:bars.map(([a,b,f])=>[[[a,0],[a,f],[b,f],[b,0]],"pen2"])}),false); }
 function boxplots(rows,o){ const W=330, x0=60, x1=W-20, X=v=>x0+(v-o.min)/(o.max-o.min)*(x1-x0), H=rows.length*58+40; let g=ln(x0,H-28,x1,H-28);
   for(let v=o.min;v<=o.max+1e-9;v+=o.step){ g+=ln(X(v),H-32,X(v),H-24); if(Math.round((v-o.min)/o.step)%(o.lab||1)===0) g+=tx(X(v),H-10,+v.toFixed(2),{s:12}); }
   if(o.xl) g+=tx(x1,H-36,o.xl,{s:12,a:"end"});
@@ -5686,7 +5687,7 @@ F.add(qs,"Triangles ABC and DEF",fig(320,170,shape([[10,150],[110,150],[10,80]],
 F.add(qs,"Jack is late for school",F.tree([["Late","0.2"],["Not late",""]],[[["Late",""],["Not late",""]],[["Late",""],["Not late",""]]],{t1:"Monday",t2:"Tuesday"}));
 F.add(qs,"A = {even numbers}",F.venn("A","B"));
 F.add(qs,"The radius is 9 cm and the angle of the sector is 80°",F.sector(9,80,"9 cm","80°"));
-F.add(qs,"Its cross-section is a trapezium",fig(270,175,M.ln(20,150,110,150)+M.ln(110,150,90,95)+M.ln(90,95,40,95)+M.ln(40,95,20,150)+M.ln(40,95,40,150,"pen dash")+M.ln(40,95,160,35)+M.ln(90,95,210,35)+M.ln(110,150,230,90)+M.ln(160,35,210,35)+M.ln(210,35,230,90)+M.ln(20,150,140,90,"pen dash")+M.ln(140,90,160,35,"pen dash")+M.ln(140,90,230,90,"pen dash")+L(65,168,"9 cm")+L(65,88,"5 cm",{s:13})+L(46,132,"4 cm",{a:"start",s:13})+L(178,134,"15 cm",{a:"start"})));
+F.add(qs,"Its cross-section is a trapezium",fig(270,175,M.ln(20,150,110,150)+M.ln(110,150,90,95)+M.ln(90,95,40,95)+M.ln(40,95,20,150)+M.ln(40,95,40,150,"pen dash")+M.ln(40,95,160,35)+M.ln(90,95,210,35)+M.ln(110,150,230,90)+M.ln(160,35,210,35)+M.ln(210,35,230,90)+M.ln(20,150,140,90,"pen dash")+M.ln(140,90,160,35,"pen dash")+M.ln(140,90,230,90,"pen dash")+L(65,168,"9 cm")+L(65,109,"5 cm",{s:13})+L(72,141,"4 cm",{a:"start",s:13})+L(178,134,"15 cm",{a:"start"})));
 F.add(qs,"A ramp is 7.5 m long",fig(270,120,shape([[20,100],[240,100],[240,40]],{s:[[1,"1.2 m"],[2,"7.5 m"]],r:[1],a:[[0,"x"]]})));
 F.add(qs,"The pictogram shows the number of cars sold",F.pictogram([["Monday",3],["Tuesday",3.5],["Wednesday",2],["Thursday",4.5]],"8 cars"));
 F.add(qs,"ABC is an isosceles triangle with AB = AC",fig(290,170,shape([[130,20],[60,140],[200,140]],{a:[[0,"40°"]],v:["A","B","C"]})+M.ln(200,140,280,140)+M.tx(284,156,"D",{s:15})+M.ang(200,140,22,0,59.7)+L(236,124,"y")));
@@ -6432,7 +6433,7 @@ MP.paper({id:"ph9",num:18,n:3,set:3,tier:"Higher",calc:true,qs});
 
 </script>
 <script src="gcse-depth-data.js?v=20261023"></script>
-<script src="gcse-depth.js?v=20261023"></script>
+<script src="gcse-depth.js?v=20261113-summary"></script>
 <script>
 LEARN.unit=null;
 Object.assign(LAB.ICONS,{
@@ -6505,7 +6506,7 @@ wrap.insertBefore(b,wrap.firstChild);
 /* Foundation / Higher switch: Foundation hides Higher-only lessons, examples, practice and exam parts */
 (()=>{
 const root=document.documentElement, KEY="maths-tier", $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const get=()=>{ try{ return localStorage.getItem(KEY)==="f"?"f":"h"; }catch(e){ return "h"; } };
+const get=()=>{ try{ const v=localStorage.getItem(KEY); return v==="f"||v==="a"?v:"h"; }catch(e){ return "h"; } };
 const HIGHER_LESSON=p=>p.tag==="Higher tier";
 window.LAB_HIDE=p=>(window.TIER==="f"&&HIGHER_LESSON(p))||(window.TIER==="h"&&p.tag==="Foundation tier");
 window.TIER_HID=el=>window.TIER==="f"&&!!el&&!!el.closest(".hi-only");
@@ -6556,7 +6557,7 @@ function renumber(){ const F=window.TIER==="f";
 
 /* ---- the switch ---- */
 const btn=document.createElement("div"); btn.className="tier-switch"; btn.setAttribute("role","group"); btn.setAttribute("aria-label","Tier");
-btn.innerHTML=`<button type="button" data-tier="f">Foundation</button><button type="button" data-tier="h">Higher</button>`;
+btn.innerHTML=`<button type="button" data-tier="f">Foundation</button><button type="button" data-tier="h">Higher</button><button type="button" data-tier="a">All content</button>`;
 const FDESC={number:"Negative numbers, BIDMAS and written methods; rounding and estimation; factors, primes, HCF and LCM; fractions, decimals and percentages; indices and roots; standard form.",
  algebra:"Expanding and factorising; solving linear and quadratic equations; rearranging formulae; sequences; straight-line, real-life and quadratic graphs; simultaneous equations; inequalities.",
  ratio:"Simplifying and sharing in a ratio; best buys and recipes; percentage change and reverse percentages; compound interest and depreciation; direct and inverse proportion; speed, density and pressure.",
@@ -6570,7 +6571,7 @@ function apply(t,user){ window.TIER=t; root.dataset.tier=t; try{ localStorage.se
   const h=(location.hash||"").slice(1), p=LAB.list.find(x=>x.id===h);
   if(p&&window.LAB_HIDE(p)){ const u=(window.HUB_UNITS||[]).find(u=>u.groups.some(([g])=>g===p.group)); location.hash=u?"u-"+u.key:""; }
   else LAB.reroute();
-  const note=document.getElementById("tier-note"); if(note) note.textContent=t==="f"?"Showing Foundation content only. Higher-only lessons, examples and questions are hidden.":"Showing all content. Higher-only material is marked Higher.";
+  const note=document.getElementById("tier-note"); if(note) note.textContent=t==="f"?"Showing Foundation content only. Higher-only lessons, examples and questions are hidden.":t==="a"?"Showing all content, including both the Foundation and Higher practice papers. Higher-only material is marked Higher.":"Showing the Higher course. Foundation practice papers are hidden; Higher-only material is marked Higher.";
   window.dispatchEvent(new Event("prodigy-tier-change"));
   if(user&&window.matchMedia) btn.querySelector(".on").focus(); }
 btn.addEventListener("click",e=>{ const b=e.target.closest("[data-tier]"); if(b) apply(b.dataset.tier,true); });
@@ -6848,7 +6849,7 @@ window.ALP_ACCOUNTS={sb,merge,stats,get user(){ return user; },get profile(){ re
 <script src="simple-layout.js?v=20261024-all"></script>
 <link rel="stylesheet" href="desktop-units.css?v=20261031-fill">
 <script src="desktop-units.js?v=20261031-fill"></script>
-<script src="lesson-summary.js?v=20261026-summary"></script>
+<script src="lesson-summary.js?v=20261113-review"></script>
 <script src="diagram-fit.js?v=20261025-diagrams"></script>
 <link rel="stylesheet" href="gcse-tiers.css?v=20261031-tiers">
 <script src="gcse-tiers.js?v=20261031-tiers"></script>

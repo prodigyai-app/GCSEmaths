@@ -19,7 +19,37 @@
     for (const n of [...card.childNodes]) if (!(n.nodeType === 1 && n.tagName === 'H3' && n.parentNode === card)) s.appendChild(n);
     return s;
   }
+  /* Review lessons carry one "Summary" card holding a bullet list. Present it as the same
+     Remember / Watch out summary, splitting bullets that already warn about an error. */
+  const WARN = /\b(not|never|avoid|careful|do not|don't|common error|lose|miss)\b/i;
+  function reviewSummary(root) {
+    for (const card of (root || document).querySelectorAll('.lcard')) {
+      if (card.dataset.lsum || !/^summary$/i.test(head(card))) continue;
+      const sec = card.closest('section');
+      if (!sec || !/review/i.test(sec.textContent.slice(0, 400))) continue;
+      const ul = card.querySelector(':scope > .prose > ul, :scope > ul');
+      if (!ul) continue;
+      const lis = [...ul.children], warn = lis.filter(li => WARN.test(li.textContent));
+      const cols = document.createElement('div');
+      cols.className = 'lsum-cols';
+      const good = document.createElement('section'); good.className = 'lsum-good';
+      const gh = document.createElement('h4'); gh.textContent = 'Remember'; good.append(gh);
+      const gu = document.createElement('ul'); gu.className = ul.className; lis.filter(li => !warn.includes(li)).forEach(li => gu.append(li)); good.append(gu);
+      cols.append(good);
+      if (warn.length) {
+        const bad = document.createElement('section'); bad.className = 'lsum-bad';
+        const bh = document.createElement('h4'); bh.textContent = 'Watch out'; bad.append(bh);
+        const bu = document.createElement('ul'); bu.className = 'kp kbad'; warn.forEach(li => bu.append(li)); bad.append(bu);
+        cols.append(bad);
+      }
+      (ul.parentNode.classList.contains('prose')&&ul.parentNode.children.length===1?ul.parentNode:ul).remove();
+      card.querySelector(':scope > h3').textContent = 'Lesson summary';
+      card.appendChild(cols);
+      card.classList.add('lsum'); card.dataset.lsum = '1';
+    }
+  }
   function apply(root) {
+    reviewSummary(root);
     for (const key of (root || document).querySelectorAll('.lcard')) {
       if (key.dataset.lsum || !/^key points$/i.test(head(key))) continue;
       const bad = key.nextElementSibling;
