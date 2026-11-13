@@ -31,13 +31,13 @@ def same_quadratic(a, b, c, roots_or_factors):
 EX = {}  # extra Foundation exam practice, keyed by lesson id
 
 # ---------- verification of the facts the text answers state ----------
-same_quadratic(1, 7, 12, [-3, -4]); same_quadratic(1, -9, 20, [4, 5]); same_quadratic(1, 3, -40, [-8, 5])
-same_quadratic(1, -5, 6, [2, 3]); same_quadratic(1, 4, -21, [-7, 3]); same_quadratic(1, 0, -25, [5, -5])
+same_quadratic(1, 8, 15, [-3, -5]); same_quadratic(1, -9, 20, [4, 5]); same_quadratic(1, 3, -40, [-8, 5])
+same_quadratic(1, -7, 12, [3, 4]); same_quadratic(1, 4, -21, [-7, 3]); same_quadratic(1, 0, -25, [5, -5])
 assert 5 * 8 == 40
 
 EX['al8'] = [
-    Q('', P('Factorise x² + 7x + 12', [('M1', '(x + a)(x + b) with ab = 12 or a + b = 7'), ('A1', '(x + 3)(x + 4)')]),
-          P('Hence solve x² + 7x + 12 = 0', [('B1', 'x = −3 and x = −4')])),
+    Q('', P('Factorise x² + 8x + 15', [('M1', '(x + a)(x + b) with ab = 15 or a + b = 8'), ('A1', '(x + 3)(x + 5)')]),
+          P('Hence solve x² + 8x + 15 = 0', [('B1', 'x = −3 and x = −5')])),
     Q('', P('Solve x² − 9x + 20 = 0', [('M1', '(x − 4)(x − 5)'), ('M1', 'x − 4 = 0 or x − 5 = 0'), ('A1', 'x = 4 and x = 5')])),
     Q('<p>A rectangle has length (x + 3) cm and width x cm. Its area is 40 cm².</p>',
       P('Show that x² + 3x − 40 = 0', [('M1', 'x(x + 3) = 40'), ('A1', 'expands to x² + 3x = 40 and rearranges to x² + 3x − 40 = 0')]),
@@ -85,23 +85,23 @@ EX['nu4'] = [
 for x in (1.3, -2.2):
     assert close(2 * x * x + 10 * x, 2 * x * (x + 5))
 EX['al2'] = [
-    Q('', P('Factorise x² − 5x + 6', [('M1', '(x ± 2)(x ± 3)'), ('A1', '(x − 2)(x − 3)')])),
+    Q('', P('Factorise x² − 7x + 12', [('M1', '(x ± 3)(x ± 4)'), ('A1', '(x − 3)(x − 4)')])),
     Q('', P('Factorise x² + 4x − 21', [('M1', 'two numbers with product −21 and sum 4'), ('A1', '(x + 7)(x − 3)')])),
     Q('', P('Factorise x² − 25', [('B1', '(x + 5)(x − 5)')])),
     Q('', P('Factorise fully 2x² + 10x', [('M1', '2(x² + 5x) or x(2x + 10)'), ('A1', '2x(x + 5)')])),
 ]
 assert (30 - 2 * 9) / 2 == 6
 EX['al4'] = [
-    Q('', P('Make t the subject of v = u + at', [('M1', 'v − u = at'), ('A1', 't = (v − u)/a')])),
-    Q('', P('Make x the subject of y = 4x − 7', [('M1', 'y + 7 = 4x'), ('A1', 'x = (y + 7)/4')])),
+    Q('', P('Make h the subject of A = ½bh', [('M1', '2A = bh'), ('A1', 'h = 2A/b')])),
+    Q('', P('Make x the subject of y = 5x + 9', [('M1', 'y − 9 = 5x'), ('A1', 'x = (y − 9)/5')])),
     Q('', P('P = 2l + 2w. Work out the value of w when P = 30 and l = 9.', [('M1', '30 = 18 + 2w'), ('A1', 'w = 6')], ans=(30 - 2 * 9) / 2)),
     Q('', P('Make r the subject of C = 2πr', [('B1', 'r = C/(2π)')])),
 ]
 # simultaneous equations checks
-assert (7 + 3, 7 - 3) == (10, 4) and (2 * 2 + 3 * 3, 2 * 2 + 3) == (13, 7) and (2 * 9 + 3 * 6, 9 + 2 * 6) == (36, 21)
+assert (7 + 3, 7 - 3) == (10, 4) and (3 * 2 + 2 * 6, 3 * 2 + 6) == (18, 12) and (2 * 9 + 3 * 6, 9 + 2 * 6) == (36, 21)
 EX['al7'] = [
     Q('', P('Solve the simultaneous equations x + y = 10 and x − y = 4', [('M1', 'adds the equations: 2x = 14'), ('M1', 'substitutes x = 7 to find y'), ('A1', 'x = 7, y = 3')])),
-    Q('', P('Solve the simultaneous equations 2x + 3y = 13 and 2x + y = 7', [('M1', 'subtracts the equations: 2y = 6'), ('M1', 'substitutes y = 3 to find x'), ('A1', 'x = 2, y = 3')])),
+    Q('', P('Solve the simultaneous equations 3x + 2y = 18 and 3x + y = 12', [('M1', 'subtracts the equations: y = 6'), ('M1', 'substitutes y = 6 to find x'), ('A1', 'x = 2, y = 6')])),
     Q('<p>2 adult tickets and 3 child tickets cost £36. 1 adult ticket and 2 child tickets cost £21.</p>',
       P('Work out the cost of one adult ticket.', [('P1', 'forms 2a + 3c = 36 and a + 2c = 21'), ('P1', 'doubles the second equation and subtracts: c = 6'), ('A1', 'c = 6 (a child ticket costs £6)'), ('A1', 'an adult ticket costs £9')], ans=9, unit='£')),
 ]
@@ -165,7 +165,7 @@ EX['ge3'] = [
     Q('', P('A cylinder has radius 2 cm and height 7 cm. Work out its volume. Give your answer correct to 1 decimal place.', [('M1', 'π × 2² × 7'), ('A1', '88.0 cm³')], ans=round(math.pi * 28, 1), unit='cm³', tol=0.001)),
 ]
 EX['ge16'] = [
-    Q('', P('Write down the number of faces, edges and vertices of a square-based pyramid.', [('B1', 'two of: 5 faces, 8 edges, 5 vertices'), ('B1', 'all three correct')])),
+    Q('', P('Write down the number of faces, edges and vertices of a triangular-based pyramid (tetrahedron).', [('B1', 'two of: 4 faces, 6 edges, 4 vertices'), ('B1', 'all three correct')])),
     Q('', P('A cube has edges of length 3 cm. How many 1 cm cubes would fit exactly inside it?', [('B1', '27')], ans=27)),
     Q('', P('Write down the name of the solid with two flat circular faces and one curved surface.', [('B1', 'cylinder')])),
 ]
@@ -300,11 +300,11 @@ R['nu9'] = dict(
           Q('', P('Write 0.000 72 in standard form.', [('B1', '7.2 × 10⁻⁴')], ans=0.00072, tol=0.0001)),
           Q('', P('Work out an estimate for (39.6 × 5.1) ÷ 0.48', [('M1', 'rounds to 40 × 5 ÷ 0.5'), ('M1', '200 ÷ 0.5'), ('A1', '400')], ans=400))])
 assert Fr(8, 5) - Fr(3, 4) == Fr(17, 20) and 40 * 5 / 0.5 == 400
-for x in (2.3, -1.1): assert close((x + 5) * (x - 3), x * x + 2 * x - 15) and close((x + 6) * (x + 2), x * x + 8 * x + 12)
+for x in (2.3, -1.1): assert close((x + 7) * (x - 2), x * x + 5 * x - 14) and close((x + 6) * (x + 2), x * x + 8 * x + 12)
 assert 3 * (2 * 6 - 1) == 4 * 6 + 9 and [23 - 3 * n for n in range(1, 5)] == [20, 17, 14, 11]
 assert 20 / 4 + 2 == 7 and 3 ** 2 - 2 * (-2) == 13 and (-12 - 4) / (7 - 3) == -4
 R['al13'] = dict(
-    hand=[H('Expanding double brackets', 'Expand and simplify (x + 5)(x − 3)', [('x² − 3x + 5x − 15', 'every term times every term')], 'x² + 2x − 15'),
+    hand=[H('Expanding double brackets', 'Expand and simplify (x + 7)(x − 2)', [('x² − 2x + 7x − 14', 'every term times every term')], 'x² + 5x − 14'),
           H('Brackets on one side', 'Solve 3(2x − 1) = 4x + 9', [('6x − 3 = 4x + 9', 'expand first'), ('2x = 12', 'collect x on the side with more')], 'x = 6'),
           H('A decreasing sequence', 'Find the nth term of 20, 17, 14, 11, …', [('difference −3 → −3n', 'the times table to compare with'), ('20 − (−3) = 23', 'the zeroth term')], 'nth term = 23 − 3n')],
     fill=[F('Factorise 6x + 15', '6x + 15 = [[3]](2x + 5)'),
